@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head prefix="og: https://ogp.me/ns#">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ホーム - Nyanfeed</title>
+    <meta property="og:title" content="ホーム" />
+    <meta property="og:site_name" content="Nyanfeed" />
+    <meta property="og:description" content="Nyanfeedで、あなたの世界を広げよう。" />
+    <meta property="og:url" content="https://nyanfeed.f5.si/" />
+    <meta property="og:image" content="https://nyanfeed.f5.si/static/img/square.png" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+
+    <meta name="title" content="ホーム">
+    <meta name="description" content="Nyanfeedで、あなたの世界を広げよう。">
+    <meta name="keywords" content="nyanfeed,にゃんふぃーど,ニャンフィード,sns,twitter,x">
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="revisit-after" content="1 day">
+    <meta name="author" content="nennneko5787">
+
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/home.css">
+    <link rel="stylesheet" href="/static/css/board.css">
+
+    <script src="/static/js/home.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="navbar">
+            <div class="navbar-logo"><img src="/static/img/square.png"></img></div>
+            <div class="navbar-content">
+                <img src="/static/img/home.svg" class="svg" />
+                ホーム
+            </div>
+            <div class="navbar-content">
+                <img src="/static/img/search.svg" class="svg" />
+                検索
+            </div>
+            <div class="navbar-content">
+                <img src="/static/img/bell.svg" class="svg" />
+                通知
+            </div>
+            <div class="navbar-content">
+                <img src="/static/img/setting.svg" class="svg" />
+                設定
+            </div>
+
+            <div class="navbar-content-bottom">
+                <img src="/static/img/setting.svg" id="myProfileIcon" />
+                <div class="myProfile">
+                    <div id="myProfileName"></div>
+                    <div id="myProfileUserName"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="postDialog" id="postDialog" style="display: none;">
+            <div class="dialog">
+                <h4>投稿</h4>
+                <div class="dialog-content">
+                    <form id="registerForm">
+                        <textarea name="content" class="postContent"></textarea>
+                        <input type="file" name="files" multiple>
+                        <p class="error" id="postError"></p>
+                        <button class="button-primary" style="width: 100%;" role="submit"><span class="text">投稿</span></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="fullBlur" id="blur" style="display: none;"></div>
+
+        <div class="content">
+            <div class="navbar-smart">
+                <div class="navbar-toggle">
+                    <img src="/static/img/menu.svg" class="svg"/>
+                </div>
+            </div>
+            <div class="content-container" id="content"></div>
+        </div>
+
+        <div class="postButton">+</div>
+
+    </div>
+</body>
+</html>

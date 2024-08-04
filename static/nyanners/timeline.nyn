@@ -1,0 +1,13 @@
+    <div class="tab">
+        <div class="tab-content tab-selected" id="tab-recommendation">
+            おすすめ
+        </div>
+        <div class="tab-content" id="tab-following">
+            フォロー中
+        </div>
+    </div>
+
+    <div class="boards" id="boards">
+    </div>
+
+    <script src="/static/js/timeline.js"></script>

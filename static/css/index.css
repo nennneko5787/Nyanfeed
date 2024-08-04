@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap');
+
+html, body {
+    height: 100%;
+    margin: 0;
+
+    font-family: "Noto Sans JP", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.container {
+    box-sizing: border-box;
+    display: flex;
+    height: 100%;
+}
+
+.logo {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img {
+        width: 30%;
+        height: auto;
+    }
+}
+
+.description {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.registerDialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px; /* Adjust the maximum width as needed */
+    background: inherit;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.loginDialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 500px; /* Adjust the maximum width as needed */
+    background: inherit;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1001;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.error {
+    margin-top: 1em;
+    font-size: 50%;
+    color: #FF0000;
+}
+
+@media (max-width: 800px) {
+    .container {
+        justify-content: flex-start;
+        align-items: flex-start;
+    }
+    .logo {
+        width: 10%;
+        height: 10%;
+        padding: 10px;
+        position: fixed;
+        top: 1;
+        left: 1;
+        display: block;
+
+        img {
+            width: 100%;
+            height: 100%;
+        }
+    }
+    .description{
+        width: 100%;
+        height: 100%;
+    }
+
+    .registerDialog {
+        width: 90%;
+        max-width: 400px;
+        padding: 15px;
+    }
+
+    .dialog {
+        padding: 10px;
+    }
+}
+

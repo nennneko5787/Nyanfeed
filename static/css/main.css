@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap');
+
+html, body {
+    height: 100%;
+    margin: 0;
+
+    font-family: "Noto Sans JP", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #000000;
+        --background-two-color: #666666;
+        --background-three-color: #888888;
+        --text-color: #FFFFFF;
+    }
+
+    .svg {
+        filter: invert(92%) sepia(93%) saturate(0%) hue-rotate(202deg) brightness(106%) contrast(106%);
+    }
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --background-color: #FFFFFF;
+        --background-two-color: #AAAAAA;
+        --background-three-color: #888888;
+        --text-color: #000000;
+    }
+
+    .svg {
+        filter: invert(0%) sepia(0%) saturate(7500%) hue-rotate(350deg) brightness(91%) contrast(98%);
+    }
+}
+
+.svg {
+    text-decoration: none;
+    user-select: none;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+.text {
+    color: var(--text-color);
+}
+.dialog {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.button-primary {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding: 2%;
+    border: solid 1px;
+    border-radius: 100px;
+    background-color: #00AAFF;
+    display: block;
+    text-decoration: none;
+    user-select: none;
+    cursor: pointer;
+    transition-duration: 0.1s;
+}
+
+.button-primary:hover {
+    background-color: #0055AA;
+    transition-duration: 0.1s;
+}
+
+.button-primary:active {
+    background-color: #003388;
+    transition-duration: 0.1s;
+}
+
+.button-outline {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    padding: 2%;
+    border: solid 1px;
+    border-radius: 100px;
+    border-color: #00AAFF;
+    background-color: rgba(0,0,0,0);
+    display: block;
+    text-decoration: none;
+    user-select: none;
+    cursor: pointer;
+    transition-duration: 0.1s;
+}
+
+.button-outline:hover {
+    border-color: #0055AA;
+}
+
+.button-outline:active {
+    border-color: #003388;
+}
+
+.fullBlur {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    -ms-filter: blur(0px);
+    filter: blur(0px);
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.dialog {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.dialog h4 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.dialog-content {
+    margin-top: 10px;
+}
+
+label {
+    display: block;
+    margin-top: 1em;
+    font-size: 50%;
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head prefix="og: https://ogp.me/ns#">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Nyanfeed</title>
+    <meta property="og:title" content="Nyanfeed" />
+    <meta property="og:site_name" content="Nyanfeed" />
+    <meta property="og:description" content="Nyanfeedで、あなたの世界を広げよう。" />
+    <meta property="og:url" content="https://nyanfeed.f5.si/" />
+    <meta property="og:image" content="https://nyanfeed.f5.si/static/img/square.png" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+
+    <meta name="title" content="Nyanfeed">
+    <meta name="description" content="Nyanfeedで、あなたの世界を広げよう。">
+    <meta name="keywords" content="nyanfeed,にゃんふぃーど,ニャンフィード,sns,twitter,x">
+    <meta name="robots" content="index, follow">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="revisit-after" content="1 day">
+    <meta name="author" content="nennneko5787">
+
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/index.css">
+
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+    <script src="/static/js/index.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo"><img src="/static/img/square.png" /></div>
+        <div class="description">
+            <div>
+                <h1>今日も、世界は平和だ。</h1>
+                <p>Nyanfeedで、あなたの世界を広げよう。</p>
+                <button class="button-primary" style="width: 100%;" role="button" id="openRegisterButton"><span class="text">登録する</span></button>
+                <button class="button-outline" style="width: 100%;" role="button" id="openLoginButton"><span class="text">ログイン</span></button>
+            </div>
+        </div>
+    </div>
+    <div class="fullBlur" id="blur" style="display: none;"></div>
+    <div class="registerDialog" id="registerDialog" style="display: none;">
+        <div class="dialog">
+            <h4>登録</h4>
+            <div class="dialog-content">
+                <form id="registerForm">
+                    <label for="username">ユーザー名(英数字とドット、アンダーバーのみ)</label>
+                    <input name="username" type="text" maxlength="14" pattern="[a-zA-Z0-9_.]+" />
+                    <label for="password">パスワード</label>
+                    <input name="password" type="password" />
+                    <label for="cf-turnstile">Turnstile</label>
+                    <div class="cf-turnstile" data-sitekey="0x4AAAAAAAWnjvnyWbiFRl3Q" data-callback="javascriptCallback"></div>
+                    <p class="error" id="registerError"></p>
+                    <button class="button-primary" style="width: 100%;" role="submit"><span class="text">登録</span></button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="loginDialog" id="loginDialog" style="display: none;">
+        <div class="dialog">
+            <h4>ログイン</h4>
+            <div class="dialog-content">
+                <form id="loginForm">
+                    <label for="username">ユーザー名(英数字とドット、アンダーバーのみ)</label>
+                    <input name="username" type="text" maxlength="14" pattern="[a-zA-Z0-9_.]+" />
+                    <label for="password">パスワード</label>
+                    <input name="password" type="password" />
+                    <p class="error" id="loginError"></p>
+                    <button class="button-primary" style="width: 100%;" role="submit"><span class="text">ログイン</span></button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
