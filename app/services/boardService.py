@@ -33,7 +33,7 @@ class BoardService:
         conn: asyncpg.Connection = await asyncpg.connect(Env.get("dsn"))
         try:
             _boards = await conn.fetch(
-                "SELECT * FROM boards ORDER BY created_at ASC LIMIT 20 OFFSET $1",
+                "SELECT * FROM boards ORDER BY created_at DESC LIMIT 20 OFFSET $1",
                 page * 20,
             )
         except Exception as e:

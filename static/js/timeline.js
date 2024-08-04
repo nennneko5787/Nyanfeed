@@ -2,7 +2,7 @@ async function loadBoards() {
     response = await fetch("/api/timeline/latest");
     jsonData = await response.json();
 
-    jsonData.slice().reverse().forEach(board => {
+    jsonData.forEach(board => {
         // Create the main board div
         const boardElement = document.createElement('div');
         boardElement.classList.add('board');
