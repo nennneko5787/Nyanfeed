@@ -7,6 +7,7 @@ app = FastAPI(title="Nyanfeed", summary="Social Network Service")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(importlib.import_module("app.endpoints.frontend").router)
+app.include_router(importlib.import_module("app.endpoints.websocket").router)
 app.include_router(importlib.import_module("app.endpoints.api.auth.register").router)
 app.include_router(importlib.import_module("app.endpoints.api.auth.login").router)
 app.include_router(importlib.import_module("app.endpoints.api.timeline.latest").router)

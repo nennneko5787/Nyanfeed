@@ -71,6 +71,7 @@
     max-width: 90%;
     position: relative;
     overflow: hidden;
+    justify-content: center;
 }
 
 /* 1 attachment */

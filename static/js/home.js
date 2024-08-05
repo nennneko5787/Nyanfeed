@@ -1,3 +1,6 @@
+// WebSocket connection
+const socket = new WebSocket(`//${window.location.hostname}/ws`);
+
 function getCookie(name) {
     let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
     if (match) return match[2];
@@ -51,8 +54,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     document.getElementById("postDialog").onsubmit = (event) => {
-        event.preventDefault(); // Prevent the default form submission
-        event.submitter.setAttribute("disabled", true);
+        event.stopPropagation(); // Prevent the default form submission
+        event.preventDefault()
+        event.submitter.disabled = true;
 
         const formData = new FormData(event.target); // Create a FormData object from the form
         console.log(formData.get("files[]"));
@@ -67,19 +71,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         .then(response => response.json()) // Assuming the server responds with JSON
         .then(data => {
             // Handle success
-            console.log('Success:', data);
             const blurElement = document.getElementById("blur");
             const postDialog = document.getElementById("postDialog");
             blurElement.style = "display: none;";
             postDialog.style = "display: none;";
             event.target.reset();
-            event.submitter.setAttribute("disabled", false);
+            event.submitter.disabled = false;
         })
         .catch(error => {
             // Handle error
             console.error('Error:', error);
             document.getElementById('postError').textContent = 'An error occurred. Please try again.';
-            event.submitter.setAttribute("disabled", false);
+            event.submitter.disabled = false;
         });
     }
 
