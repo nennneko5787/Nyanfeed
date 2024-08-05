@@ -155,6 +155,8 @@ class BoardService:
                 region_name="apac",
             ) as client:
                 for file in files:
+                    if not file:
+                        continue
                     if not file.content_type in cls.allowFileExtensions:
                         raise UnauthorizedFileExtensionError()
                     fileId = f"boards/{boardId}/{next(gen)}{mimetypes.guess_extension(file.content_type)}"
