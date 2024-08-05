@@ -26,7 +26,7 @@ class Board(BaseModel):
         return dt.isoformat()
 
     @field_serializer("edited_at")
-    def convertEditedAt(self, dt: Optional[datetime] = None) -> Optional[str]:
+    def convertEditedAt(self, dt: Optional[datetime]) -> Optional[str]:
         return dt.isoformat() if dt is not None else None
 
     def __init__(self, *args, **kwargs):
