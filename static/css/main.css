@@ -17,6 +17,7 @@ html, body {
         --background-two-color: #666666;
         --background-three-color: #888888;
         --text-color: #FFFFFF;
+        --text-color-rgb: 255,255,255;
     }
 
     .svg {
@@ -30,6 +31,7 @@ html, body {
         --background-two-color: #AAAAAA;
         --background-three-color: #888888;
         --text-color: #000000;
+        --text-color-rgb: 0,0,0;
     }
 
     .svg {

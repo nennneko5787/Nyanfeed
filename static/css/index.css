@@ -7,6 +7,7 @@ html, body {
     font-family: "Noto Sans JP", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
+    font-size: 100%;
     font-style: normal;
 }
 
@@ -71,6 +72,17 @@ html, body {
     margin-top: 1em;
     font-size: 50%;
     color: #FF0000;
+}
+
+.footer{
+    display: flex;
+    padding: 2%;
+    font-size: 80%;
+}
+
+.footerContent {
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 @media (max-width: 800px) {

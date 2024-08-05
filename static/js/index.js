@@ -100,13 +100,11 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("openLoginButton").onclick = openLoginDialog;
 
     document.getElementById("registerForm").onsubmit = async (event) => {
-        event.stopPropagation();
         event.preventDefault()
         await register();
     };
 
     document.getElementById("loginForm").onsubmit = async (event) => {
-        event.stopPropagation();
         event.preventDefault()
         await login();
     };

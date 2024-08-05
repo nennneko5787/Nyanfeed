@@ -1,0 +1,14 @@
+body {
+    margin: 3%;
+}
+
+.footer{
+    display: flex;
+    padding: 2%;
+    font-size: 80%;
+}
+
+.footerContent {
+    margin-left: 10px;
+    margin-right: 10px;
+}

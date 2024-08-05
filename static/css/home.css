@@ -157,39 +157,11 @@ html, body {
     box-sizing: border-box;
 }
 
-.textarea-wrapper {
-    position: relative;
-    width: 100%;
-}
-
 .postContent {
     width: 99%;
     height: 10em;
-    position: relative;
-    z-index: 1;
-    background: transparent;
-    opacity: 0;
-    white-space: pre-wrap; /* Preserve whitespace and line breaks */
-    overflow: hidden;
+    line-height: 1.5;
 }
-
-.overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 99%;
-    height: 10em;
-    z-index: 2;
-    pointer-events: none;
-    overflow: hidden;
-    white-space: pre-wrap;
-}
-
-.highlighted {
-    background-color: blue;
-    color: white;
-}
-
 
 .postButton {
     display: flex;

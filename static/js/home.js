@@ -86,76 +86,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
     }
 
-    document.querySelector(".postContent").oninput = () => {
-        const textarea = document.querySelector(".postContent");
-        const overlay = document.querySelector(".overlay");
-        const text = textarea.value;
-
-        // Display the content in the overlay
-        overlay.innerHTML = text.replace(/\n/g, '<br>'); // Handle line breaks
-
-        // Detect the selection
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0);
-            const start = range.startOffset;
-            const end = range.endOffset;
-            const selectedText = text.substring(start, end);
-
-            // Highlight selected text
-            const before = text.substring(0, start);
-            const after = text.substring(end);
-
-            overlay.innerHTML = `${before}<span class="highlighted">${selectedText}</span>${after}`;
+    document.querySelector(".postButton").onclick = () => {
+        const blurElement = document.getElementById("blur");
+        const postDialog = document.getElementById("postDialog");
+        postDialog.style = "";
+        blurElement.style = "";
+        blurElement.onclick = () => {
+            blurElement.style = "display: none;";
+            postDialog.style = "display: none;";
+            blurElement.onclick = null;
         }
-    };
-
-    document.querySelector(".postContent").oninput = () => {
-        const textarea = document.querySelector(".postContent");
-        const overlay = document.querySelector(".overlay");
-        const text = textarea.value;
-
-        // Display the content in the overlay
-        overlay.innerHTML = text.replace(/\n/g, '<br>'); // Handle line breaks
-
-        // Detect the selection
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0);
-            const start = range.startOffset;
-            const end = range.endOffset;
-            const selectedText = text.substring(start, end);
-
-            // Highlight selected text
-            const before = text.substring(0, start);
-            const after = text.substring(end);
-
-            overlay.innerHTML = `${before}<span class="highlighted">${selectedText}</span>${after}`;
-        }
-    };
-
-    // Handle selection change and update overlay
-    document.querySelector(".postContent").addEventListener('mouseup', () => {
-        const textarea = document.querySelector(".postContent");
-        const overlay = document.querySelector(".overlay");
-        const text = textarea.value;
-
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-            const range = selection.getRangeAt(0);
-            const start = range.startOffset;
-            const end = range.endOffset;
-            const selectedText = text.substring(start, end);
-
-            // Highlight selected text
-            const before = text.substring(0, start);
-            const after = text.substring(end);
-
-            overlay.innerHTML = `${before}<span class="highlighted">${selectedText}</span>${after}`;
-        } else {
-            overlay.innerHTML = text;
-        }
-    });
+    }
 
     const navbarToggle = document.querySelector(".navbar-toggle");
     const navbar = document.querySelector(".navbar");
