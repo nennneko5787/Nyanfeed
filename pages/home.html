@@ -25,6 +25,8 @@
     <link rel="stylesheet" href="/static/css/board.css">
 
     <script src="/static/js/home.js"></script>
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4330360014245167" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="container">
@@ -61,7 +63,12 @@
                 <h4>投稿</h4>
                 <div class="dialog-content">
                     <form id="registerForm">
-                        <textarea name="content" class="postContent"></textarea>
+                        <div class="textarea-wrapper">
+                            <textarea name="content" class="postContent"></textarea>
+                            <div class="overlay">
+                                <span id="overlayText"></span>
+                            </div>
+                        </div>
                         <input type="file" name="files" multiple>
                         <p class="error" id="postError"></p>
                         <button class="button-primary" style="width: 100%;" role="submit"><span class="text">投稿</span></button>

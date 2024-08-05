@@ -1,3 +1,4 @@
+import asyncio
 import html
 import traceback
 import mimetypes
@@ -40,11 +41,9 @@ class BoardService:
             await conn.close()
             raise e
         boards = []
-        print(_boards)
-        for board in _boards:
-            board = await cls.dictToBoard(dict(board))
-            boards.append(board)
         await conn.close()
+        tasks = [cls.dictToBoard(dict(board)) for board in _boards]
+        boards = await asyncio.gather(*tasks)
         return boards
 
     @classmethod
@@ -162,6 +161,7 @@ class BoardService:
                     fileId = f"boards/{boardId}/{next(gen)}{mimetypes.guess_extension(file.content_type)}"
                     filesKey.append(fileId)
                     await client.upload_fileobj(file, "nyanfeed", fileId)
+                    await asyncio.sleep(0)
 
         try:
             board = await conn.fetchrow(

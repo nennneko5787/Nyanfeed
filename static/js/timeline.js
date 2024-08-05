@@ -29,9 +29,14 @@ function addPostToTimeline(board) {
     profileName.appendChild(profileDisplayName);
     profileName.appendChild(profileUsername);
 
+    const boardDate = document.createElement('div');
+    boardDate.classList.add('board-date');
+    boardDate.textContent = board.create_at;
+
     // Append profile icon and profileName to boardProfile
     boardProfile.appendChild(profileIcon);
     boardProfile.appendChild(profileName);
+    boardProfile.appendChild(boardDate);
 
     // Create the content section
     const boardContent = document.createElement('div');
@@ -74,6 +79,7 @@ function addPostToTimeline(board) {
     icon.src = "/static/img/reply.svg";
     icon.className = "svg";
     icon.width = "27";
+    icon.loading = "lazy";
     actionElement.appendChild(icon);
 
     let count = document.createElement("span");
@@ -92,6 +98,7 @@ function addPostToTimeline(board) {
     icon.src = "/static/img/reboard.svg";
     icon.className = "svg";
     icon.width = "27";
+    icon.loading = "lazy";
     actionElement.appendChild(icon);
 
     count = document.createElement("span");
@@ -110,6 +117,7 @@ function addPostToTimeline(board) {
     icon.src = "/static/img/heart-outline.svg";
     icon.className = "svg";
     icon.width = "27";
+    icon.loading = "lazy";
     actionElement.appendChild(icon);
 
     count = document.createElement("span");
@@ -128,6 +136,7 @@ function addPostToTimeline(board) {
     icon.src = "/static/img/star-outline.svg";
     icon.className = "svg";
     icon.width = "27";
+    icon.loading = "lazy";
     actionElement.appendChild(icon);
 
     boardActions.appendChild(actionElement);
@@ -136,12 +145,13 @@ function addPostToTimeline(board) {
     actionElement = document.createElement("div");
     actionElement.className = "board-action";
     actionElement.title = "シェア";
+    icon.loading = "lazy";
     actionElement.addEventListener("click", async () => {
         try {
             await navigator.share({
-                title: "MDN",
-                text: "Learn web development on MDN!",
-                url: "https://developer.mozilla.org",
+                title: "ボード(投稿)をシェア",
+                text: `Nyanfeedで${board.user.display_name}さんの投稿(投稿)を見ました！`,
+                url: `https://htnmk.com/@${board.user.username}/boards/${BigInt(board.id)}`,
             });
         } catch (err) {
             console.log(err);

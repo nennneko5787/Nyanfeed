@@ -1,8 +1,13 @@
 import aiofiles
 from fastapi import APIRouter
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
 
 router = APIRouter()
+
+
+@router.get("/favicon.ico", response_class=FileResponse)
+async def index():
+    return FileResponse("./favicon.ico", media_type="image/vnd.microsoft.icon")
 
 
 @router.get("/", response_class=HTMLResponse)
