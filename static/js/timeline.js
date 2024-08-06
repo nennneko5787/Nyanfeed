@@ -1,3 +1,37 @@
+function timeAgo(date) {
+    const now = new Date();
+    const diff = now - date; // 差分をミリ秒で計算
+
+    const minute = 60 * 1000; // 1分のミリ秒数
+    const hour = 60 * minute; // 1時間のミリ秒数
+    const day = 24 * hour;    // 1日のミリ秒数
+    const week = 7 * day;     // 1週間のミリ秒数
+    const month = 30 * day;   // 1ヶ月のミリ秒数（おおよそ）
+    const year = 365 * day;   // 1年のミリ秒数（おおよそ）
+
+    if (diff < minute) {
+        return '数秒前';
+    } else if (diff < hour) {
+        const minutes = Math.floor(diff / minute);
+        return `${minutes}分前`;
+    } else if (diff < day) {
+        const hours = Math.floor(diff / hour);
+        return `${hours}時間前`;
+    } else if (diff < week) {
+        const days = Math.floor(diff / day);
+        return `${days}日前`;
+    } else if (diff < month) {
+        const weeks = Math.floor(diff / week);
+        return `${weeks}週間前`;
+    } else if (diff < year) {
+        const months = Math.floor(diff / month);
+        return `${months}ヶ月前`;
+    } else {
+        const years = Math.floor(diff / year);
+        return `${years}年前`;
+    }
+}
+
 function addPostToTimeline(board) {
     // Create the main board div
     const boardElement = document.createElement('div');
@@ -29,9 +63,12 @@ function addPostToTimeline(board) {
     profileName.appendChild(profileDisplayName);
     profileName.appendChild(profileUsername);
 
+    createdAt = new Date(board.created_at)
+
     const boardDate = document.createElement('div');
     boardDate.classList.add('board-date');
-    boardDate.textContent = board.create_at;
+    boardDate.title = createdAt;
+    boardDate.textContent = timeAgo(createdAt);
 
     // Append profile icon and profileName to boardProfile
     boardProfile.appendChild(profileIcon);

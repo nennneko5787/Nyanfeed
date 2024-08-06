@@ -46,64 +46,89 @@ class BoardService:
         boards = await asyncio.gather(*tasks)
         return boards
 
+    @staticmethod
+    async def fetch_user(user_id):
+        conn = await asyncpg.connect(Env.get("dsn"))
+        try:
+            user_row = await conn.fetchrow("SELECT * FROM users WHERE id = $1", user_id)
+        finally:
+            await conn.close()
+        return User.model_validate(dict(user_row))
+
+    @staticmethod
+    async def fetch_replys_count(board_id):
+        conn = await asyncpg.connect(Env.get("dsn"))
+        try:
+            replys_count = await conn.fetchval(
+                "SELECT COUNT(*) FROM boards WHERE reply_id = $1", board_id
+            )
+        finally:
+            await conn.close()
+        return replys_count
+
+    @staticmethod
+    async def fetch_reboards_count(board_id):
+        conn = await asyncpg.connect(Env.get("dsn"))
+        try:
+            reboards_count = await conn.fetchval(
+                "SELECT COUNT(*) FROM boards WHERE reboard_id = $1", board_id
+            )
+        finally:
+            await conn.close()
+        return reboards_count
+
     @classmethod
-    async def dictToBoard(cls, board: dict):
-        conn: asyncpg.Connection = await asyncpg.connect(Env.get("dsn"))
+    async def fetch_reply(cls, reply_id: int):
+        if reply_id is None:
+            return None
+        conn = await asyncpg.connect(Env.get("dsn"))
         try:
-            board["user"] = User.model_validate(
-                dict(
-                    await conn.fetchrow(
-                        "SELECT * FROM users WHERE id = $1",
-                        board["user_id"],
-                    )
-                )
+            reply_row = await conn.fetchrow(
+                "SELECT * FROM boards WHERE id = $1", reply_id
             )
-        except Exception as e:
+        finally:
             await conn.close()
-            raise e
+        return await cls.dictToBoard(dict(reply_row))
+
+    @classmethod
+    async def fetch_reboard(cls, reboard_id: int):
+        if reboard_id is None:
+            return None
+        conn = await asyncpg.connect(Env.get("dsn"))
         try:
-            board["replys_count"] = await conn.fetchval(
-                "SELECT COUNT(*) FROM boards WHERE reply_id = $1",
-                board["id"],
+            reboard_row = await conn.fetchrow(
+                "SELECT * FROM boards WHERE id = $1", reboard_id
             )
-        except Exception as e:
+        finally:
             await conn.close()
-            raise e
+        return await cls.dictToBoard(dict(reboard_row))
+
+    @classmethod
+    async def dictToBoard(cls, board):
         try:
-            board["reboards_count"] = await conn.fetchval(
-                "SELECT COUNT(*) FROM boards WHERE reboard_id = $1",
-                board["id"],
+            user_task = cls.fetch_user(board["user_id"])
+            replys_count_task = cls.fetch_replys_count(board["id"])
+            reboards_count_task = cls.fetch_reboards_count(board["id"])
+            reply_task = cls.fetch_reply(board.get("reply_id"))
+            reboard_task = cls.fetch_reboard(board.get("reboard_id"))
+
+            user, replys_count, reboards_count, reply, reboard = await asyncio.gather(
+                user_task,
+                replys_count_task,
+                reboards_count_task,
+                reply_task,
+                reboard_task,
             )
+
+            board["user"] = user
+            board["replys_count"] = replys_count
+            board["reboards_count"] = reboards_count
+            board["reply"] = reply
+            board["reboard"] = reboard
+
         except Exception as e:
-            await conn.close()
             raise e
-        if board["reply_id"] is not None:
-            try:
-                board["reply"] = await cls.dictToBoard(
-                    dict(
-                        await conn.fetchrow(
-                            "SELECT * FROM boards WHERE id = $1",
-                            board["reply_id"],
-                        )
-                    )
-                )
-            except Exception as e:
-                await conn.close()
-                raise e
-        if board["reboard_id"] is not None:
-            try:
-                board["reboard"] = await cls.dictToBoard(
-                    dict(
-                        await conn.fetchrow(
-                            "SELECT * FROM boards WHERE id = $1",
-                            board["reboard_id"],
-                        )
-                    )
-                )
-            except Exception as e:
-                await conn.close()
-                raise e
-        await conn.close()
+
         return Board.model_validate(board)
 
     @classmethod

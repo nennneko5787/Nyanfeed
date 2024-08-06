@@ -5,6 +5,7 @@
 
 .board-profile {
     display: flex;
+    justify-content: flex-start;
     align-items: center;
     text-decoration: none;
     user-select: none;
@@ -122,4 +123,9 @@
     height: auto;
     object-fit: cover;
     border-radius: 5px;
+}
+
+.board-date {
+    margin-left: auto;
+    color: var(--background-two-color);
 }
