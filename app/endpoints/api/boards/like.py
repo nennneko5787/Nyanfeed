@@ -4,6 +4,9 @@ from ...websocket import ConnectionManager
 from ....objects import Board, User
 from ....services import BoardService, UserAuthService
 
+from starlette.middleware.sessions import SessionMiddleware
+from starlette.middleware.authentication import AuthenticationMiddleware
+
 router = APIRouter()
 
 
@@ -19,9 +22,6 @@ async def getBoard(
         )
     iliked, count = await BoardService.toggleLikeBoard(boardId, user)
     await ConnectionManager.sendLike(
-        boardId=boardId,
-        iliked=iliked,
-        count=count,
-        user=User.model_validate(user.model_dump()),
+        boardId=boardId, iliked=iliked, count=count, user=user
     )
     return {"iliked": iliked, "count": count}

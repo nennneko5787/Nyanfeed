@@ -2,6 +2,8 @@ import asyncio
 from typing import List
 
 from fastapi import APIRouter, WebSocketDisconnect
+from starlette.middleware.sessions import SessionMiddleware
+from starlette.middleware.authentication import AuthenticationMiddleware
 
 from ..objects import WebSocket, User
 from ..services import UserAuthService
