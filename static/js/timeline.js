@@ -268,7 +268,7 @@ socket.onmessage = function(event) {
     if (message.type == "board") {
         addPostToTimeline(message.data);
     } else if (message.type == "liked") {
-        document.querySelectorAll(`.LikeIcon-${board.id_str}`).forEach((icon) => {
+        document.querySelectorAll(`.LikeIcon-${message.data.board_id_str}`).forEach((icon) => {
             if (message.data.iliked) {
                 icon.src = "/static/img/heart.svg";
                 icon.classList.remove("svg");
@@ -278,7 +278,7 @@ socket.onmessage = function(event) {
             }
         });
 
-        document.querySelectorAll(`.LikeCount-${board.id_str}`).forEach((count) => {
+        document.querySelectorAll(`.LikeCount-${message.data.board_id_str}`).forEach((count) => {
             count.textContent = message.data.count;
         });
     }
