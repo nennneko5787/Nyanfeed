@@ -6,9 +6,9 @@ from ....services import BoardService, UserAuthService
 router = APIRouter()
 
 
-@router.get("/api/boards/{board_id:int}")
+@router.get("/api/boards/{boardId:int}")
 async def getBoard(
-    board_id: int, user: User = Depends(UserAuthService.getUserFromBearerToken)
+    boardId: int, user: User = Depends(UserAuthService.getUserFromBearerToken)
 ):
-    board: Board = await BoardService.getBoard(board_id, user=user)
+    board: Board = await BoardService.getBoard(boardId, user=user)
     return board

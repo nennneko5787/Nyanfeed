@@ -7,9 +7,9 @@ from ....services import BoardService, UserAuthService
 router = APIRouter()
 
 
-@router.post("/api/boards/{board_id:int}/like")
+@router.post("/api/boards/{boardId:int}/like")
 async def getBoard(
-    board_id: int, user: User = Depends(UserAuthService.getUserFromBearerToken)
+    boardId: int, user: User = Depends(UserAuthService.getUserFromBearerToken)
 ):
     if not user:
         raise HTTPException(
@@ -17,15 +17,8 @@ async def getBoard(
             detail="Bearer authentication required",
             headers={"WWW-Authenticate": 'Bearer realm="auth_required"'},
         )
-    iliked, count = await BoardService.toggleLikeBoard(board_id, user)
-    await ConnectionManager.broadcast(
-        {
-            "type": "liked",
-            "data": {
-                "board_id": board_id,
-                "board_id_str": str(board_id),
-                "count": count,
-            },
-        }
+    iliked, count = await BoardService.toggleLikeBoard(boardId, user)
+    await ConnectionManager.sendLike(
+        boardId=boardId, iliked=iliked, count=count, user=user
     )
     return {"iliked": iliked, "count": count}

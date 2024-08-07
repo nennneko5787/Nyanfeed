@@ -36,3 +36,25 @@ class UserAuthService:
         user = dict(user)
 
         return User.model_validate(dict(user))
+
+    @classmethod
+    async def getUserFromStringToken(cls, token: str):
+        user_id = await Env.pool.fetchval(
+            f"SELECT user_id FROM tokens WHERE token = $1",
+            token,
+        )
+
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+        user = await Env.pool.fetchrow(
+            f"SELECT * FROM users WHERE id = $1",
+            user_id,
+        )
+
+        if not user:
+            return None
+
+        user = dict(user)
+
+        return User.model_validate(dict(user))

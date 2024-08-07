@@ -267,12 +267,35 @@ function addPostToTimeline(board, reverse = false) {
     }
 }
 
+async function websocketLogin() {
+    socket.send(
+        JSON.stringify(
+            {
+                "type": "login",
+                "data": {
+                    "token": getCookie("token")
+                }
+            }
+        )
+    );
+}
+
 socket.onmessage = function(event) {
     const message = JSON.parse(event.data);
     console.log(message);
     if (message.type == "board") {
         addPostToTimeline(message.data);
     } else if (message.type == "liked") {
+        document.querySelectorAll(`.LikeIcon-${message.data.board_id_str}`).forEach((icon) => {
+            if (message.data.iliked) {
+                icon.src = "/static/img/heart.svg";
+                icon.classList.remove("svg");
+            }else{
+                icon.src = "/static/img/heart-outline.svg";
+                icon.classList.add("svg");
+            }
+        });
+
         document.querySelectorAll(`.LikeCount-${message.data.board_id_str}`).forEach((count) => {
             count.textContent = message.data.count;
         });
@@ -317,4 +340,5 @@ document.getElementById("scrollevent").addEventListener('scroll', () => {
     }
 }, {passive: true});
 
+websocketLogin();
 loadBoards(0, true, false);

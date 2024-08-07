@@ -1,7 +1,10 @@
 import asyncio
 from typing import List
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocketDisconnect
+
+from ..objects import WebSocket, User
+from ..services import UserAuthService
 
 router = APIRouter()
 
@@ -29,12 +32,58 @@ class ConnectionManager:
         ]
         await asyncio.gather(*connections)
 
+    @classmethod
+    async def sendLike(cls, *, boardId: int, iliked: bool, count: int, user: User):
+        connections = []
+        for connection in cls.active_connections:
+            if user.id == connection.user.id:
+                connections.append(
+                    connection.send_json(
+                        {
+                            "type": "liked",
+                            "data": {
+                                "board_id": boardId,
+                                "board_id_str": str(boardId),
+                                "iliked": iliked,
+                                "count": count,
+                            },
+                        }
+                    )
+                )
+            else:
+                connections.append(
+                    connection.send_json(
+                        {
+                            "type": "liked",
+                            "data": {
+                                "board_id": boardId,
+                                "board_id_str": str(boardId),
+                                "iliked": False,
+                                "count": count,
+                            },
+                        }
+                    )
+                )
+        await asyncio.gather(*connections)
+
 
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await ConnectionManager.connect(websocket)
     try:
         while True:
-            data = await websocket.receive_json()
+            data: dict = await websocket.receive_json()
+            if data.get("type", "") == "login":
+                user: User = await UserAuthService.getUserFromStringToken(
+                    data["data"]["token"]
+                )
+                if not user:
+                    await websocket.send_json({"type": "login_failed"})
+                else:
+                    WebSocket.user = user
+                    print(f"logined {user.username}")
+                    await websocket.send_json({"type": "login_success"})
+
+            await asyncio.sleep(0)
     except WebSocketDisconnect:
         ConnectionManager.disconnect(websocket)
