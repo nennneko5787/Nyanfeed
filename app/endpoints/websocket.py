@@ -80,7 +80,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 if not user:
                     await websocket.send_json({"type": "login_failed"})
                 else:
-                    WebSocket.nfuser = user
+                    websocket.nfuser = user
                     print(f"logined {user.username}")
                     await websocket.send_json({"type": "login_success"})
 
