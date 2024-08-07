@@ -5,7 +5,19 @@ function getCookie(name) {
 }
 
 // WebSocket connection
-const socket = new WebSocket(`//${window.location.hostname}/ws/${getCookie("token")}`);
+let socket = new WebSocket(`//${window.location.hostname}/ws/${getCookie("token")}`);
+
+ws.onclose = function(e) {
+    console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
+    setTimeout(function() {
+        socket = new WebSocket(`//${window.location.hostname}/ws/${getCookie("token")}`);
+    }, 1000);
+};
+
+ws.onerror = function(err) {
+    console.error('Socket encountered error: ', err.message, 'Closing socket');
+    ws.close();
+};
 
 async function initializeHomeScreen(path) {
     const navbar = document.querySelector(".navbar");
