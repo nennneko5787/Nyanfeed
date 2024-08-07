@@ -1,11 +1,11 @@
-// WebSocket connection
-const socket = new WebSocket(`//${window.location.hostname}/ws`);
-
 function getCookie(name) {
     let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
     if (match) return match[2];
     return null;
 }
+
+// WebSocket connection
+const socket = new WebSocket(`//${window.location.hostname}/ws/${getCookie("token")}`);
 
 async function initializeHomeScreen(path) {
     const navbar = document.querySelector(".navbar");

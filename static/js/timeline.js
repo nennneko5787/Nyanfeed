@@ -267,19 +267,6 @@ function addPostToTimeline(board, reverse = false) {
     }
 }
 
-async function websocketLogin() {
-    socket.send(
-        JSON.stringify(
-            {
-                "type": "login",
-                "data": {
-                    "token": getCookie("token")
-                }
-            }
-        )
-    );
-}
-
 socket.onmessage = function(event) {
     const message = JSON.parse(event.data);
     console.log(message);
@@ -340,5 +327,4 @@ document.getElementById("scrollevent").addEventListener('scroll', () => {
     }
 }, {passive: true});
 
-websocketLogin();
 loadBoards(0, true, false);

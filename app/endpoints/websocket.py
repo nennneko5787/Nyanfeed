@@ -1,7 +1,7 @@
 import asyncio
 from typing import List
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, WebSocketException
 
 from ..objects import User
 from ..services import UserAuthService
@@ -88,6 +88,24 @@ async def websocket_endpoint(websocket: WebSocket):
                     print(f"logined {user.username}")
                     await websocket.send_json({"type": "login_success"})
 
+            await asyncio.sleep(0)
+    except WebSocketDisconnect:
+        ConnectionManager.disconnect(websocket)
+
+
+@router.websocket("/ws/{token}")
+async def websocket_endpoint(websocket: WebSocket, token: str):
+    await ConnectionManager.connect(websocket)
+    user: User = await UserAuthService.getUserFromStringToken(token)
+    if user:
+        ConnectionManager.user[websocket] = user
+        print(f"logined {user.username}")
+        await websocket.send_json({"type": "login_success"})
+    else:
+        raise WebSocketException(1005, "wrong token")
+    try:
+        while True:
+            data: dict = await websocket.receive_json()
             await asyncio.sleep(0)
     except WebSocketDisconnect:
         ConnectionManager.disconnect(websocket)
