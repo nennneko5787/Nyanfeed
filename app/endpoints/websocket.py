@@ -2,8 +2,6 @@ import asyncio
 from typing import List
 
 from fastapi import APIRouter, WebSocketDisconnect
-from starlette.middleware.sessions import SessionMiddleware
-from starlette.middleware.authentication import AuthenticationMiddleware
 
 from ..objects import WebSocket, User
 from ..services import UserAuthService
@@ -38,7 +36,7 @@ class ConnectionManager:
     async def sendLike(cls, *, boardId: int, iliked: bool, count: int, user: User):
         connections = []
         for connection in cls.active_connections:
-            if user.id == connection.user.id:
+            if user.id == connection.nfuser.id:
                 connections.append(
                     connection.send_json(
                         {
@@ -82,7 +80,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 if not user:
                     await websocket.send_json({"type": "login_failed"})
                 else:
-                    WebSocket.user = user
+                    WebSocket.nfuser = user
                     print(f"logined {user.username}")
                     await websocket.send_json({"type": "login_success"})
 

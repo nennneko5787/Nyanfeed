@@ -4,9 +4,6 @@ from ...websocket import ConnectionManager
 from ....objects import Board, User
 from ....services import BoardService, UserAuthService
 
-from starlette.middleware.sessions import SessionMiddleware
-from starlette.middleware.authentication import AuthenticationMiddleware
-
 router = APIRouter()
 
 
