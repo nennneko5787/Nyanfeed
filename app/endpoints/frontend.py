@@ -1,6 +1,6 @@
 import aiofiles
 from fastapi import APIRouter
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 
 router = APIRouter()
 

@@ -1,16 +1,16 @@
 import asyncio
 import html
-import traceback
 import mimetypes
-from typing import Optional, List
+import traceback
+from typing import List, Optional
 
-import asyncpg
 import aioboto3
-from snowflake import SnowflakeGenerator
+import asyncpg
 from fastapi import UploadFile
+from snowflake import SnowflakeGenerator
 
 from .. import Env
-from ..objects import Board, BoardNotFoundError, User, UnauthorizedFileExtensionError
+from ..objects import Board, BoardNotFoundError, UnauthorizedFileExtensionError, User
 
 
 class BoardService:
@@ -30,7 +30,7 @@ class BoardService:
     ]
 
     @classmethod
-    async def getLocalTimeLine(cls, page: int = 0):
+    async def getLocalTimeLine(cls, page: int = 0, *, user: Optional[User] = None):
         conn: asyncpg.Connection = await asyncpg.connect(Env.get("dsn"))
         try:
             _boards = await conn.fetch(
@@ -42,9 +42,23 @@ class BoardService:
             raise e
         boards = []
         await conn.close()
-        tasks = [cls.dictToBoard(dict(board)) for board in _boards]
+        tasks = [cls.dictToBoard(dict(board), user=user) for board in _boards]
         boards = await asyncio.gather(*tasks)
         return boards
+
+    @classmethod
+    async def getBoard(cls, boardId: int, *, user: Optional[User] = None):
+        conn: asyncpg.Connection = await asyncpg.connect(Env.get("dsn"))
+        try:
+            _board = await conn.fetchrow("SELECT * FROM boards WHERE id = $1", boardId)
+            if _board is None:
+                raise ValueError(f"Board with id {boardId} does not exist.")
+        except Exception as e:
+            await conn.close()
+            raise e
+        await conn.close()
+        board = await cls.dictToBoard(dict(_board), user=user)
+        return board
 
     @staticmethod
     async def fetch_user(user_id):
@@ -104,7 +118,7 @@ class BoardService:
         return await cls.dictToBoard(dict(reboard_row))
 
     @classmethod
-    async def dictToBoard(cls, board):
+    async def dictToBoard(cls, board, *, user: Optional[User] = None):
         try:
             user_task = cls.fetch_user(board["user_id"])
             replys_count_task = cls.fetch_replys_count(board["id"])
@@ -129,7 +143,13 @@ class BoardService:
         except Exception as e:
             raise e
 
-        return Board.model_validate(board)
+        board = Board.model_validate(board)
+        if user:
+            if user.id in board.liked_id:
+                board.iliked = True
+            else:
+                board.iliked = False
+        return board
 
     @classmethod
     async def create(
@@ -205,3 +225,38 @@ class BoardService:
 
         board = await cls.dictToBoard(dict(board))
         return board
+
+    @classmethod
+    async def toggleLikeBoard(cls, board_id: int, user: User):
+        iliked = False
+
+        conn: asyncpg.Connection = await asyncpg.connect(Env.get("dsn"))
+        try:
+            liked_id: List[int] = await conn.fetchval(
+                "SELECT liked_id FROM boards WHERE id = $1", board_id
+            )
+        except Exception as e:
+            await conn.close()
+            raise e
+
+        if not liked_id:
+            liked_id = []
+
+        if user.id in liked_id:
+            liked_id.remove(user.id)
+        else:
+            liked_id.append(user.id)
+            iliked = True
+
+        count = len(liked_id)
+
+        try:
+            await conn.execute(
+                "UPDATE boards SET liked_id = $1 WHERE id = $2", liked_id, board_id
+            )
+        except Exception as e:
+            await conn.close()
+            raise e
+
+        await conn.close()
+        return iliked, count

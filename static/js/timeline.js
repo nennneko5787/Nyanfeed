@@ -1,3 +1,9 @@
+function getCookie(name) {
+    let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    if (match) return match[2];
+    return null;
+}
+
 function timeAgo(date) {
     const now = new Date();
     const diff = now - date; // 差分をミリ秒で計算
@@ -33,10 +39,12 @@ function timeAgo(date) {
 }
 
 function addPostToTimeline(board) {
+    console.log(board);
+
     // Create the main board div
     const boardElement = document.createElement('div');
     boardElement.classList.add('board');
-    boardElement.setAttribute("x-nyanfeed-board-id", BigInt(board.id));
+    boardElement.setAttribute("x-nyanfeed-board-id", board.id_str);
 
     // Create the profile section
     const boardProfile = document.createElement('div');
@@ -108,7 +116,6 @@ function addPostToTimeline(board) {
         imageElement.src = `https://r2.htnmk.com/${file}`;
         imageElement.loading = "lazy";
         boardAttachments.append(imageElement);
-        console.log(file);
     })
 
     // Create the actions section
@@ -129,7 +136,7 @@ function addPostToTimeline(board) {
 
     let count = document.createElement("span");
     count.className = "board-count";
-    count.innerText = "0";
+    count.textContent = "0";
     actionElement.appendChild(count);
 
     boardActions.appendChild(actionElement);
@@ -148,7 +155,7 @@ function addPostToTimeline(board) {
 
     count = document.createElement("span");
     count.className = "board-count";
-    count.innerText = "0";
+    count.textContent = "0";
     actionElement.appendChild(count);
 
     boardActions.appendChild(actionElement);
@@ -157,17 +164,49 @@ function addPostToTimeline(board) {
     actionElement = document.createElement("div");
     actionElement.className = "board-action";
     actionElement.title = "いいね";
+    actionElement.setAttribute("x-nyanfeed-board-id", board.id_str);
+    actionElement.onclick = (event) => {
+        const board_id = event.target.getAttribute("x-nyanfeed-board-id");
+        response = fetch(`/api/boards/${board.id_str}/like`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${getCookie("token")}`
+            }
+        }).then((response) => {
+            response.json().then((json) => {
+                document.querySelectorAll(`.LikeIcon-${board.id_str}`).forEach((icon) => {
+                    if (json.iliked) {
+                        icon.src = "/static/img/heart.svg";
+                        icon.classList.remove("svg");
+                    }else{
+                        icon.src = "/static/img/heart-outline.svg";
+                        icon.classList.add("svg");
+                    }
+                });
+
+                document.querySelectorAll(`.LikeCount-${board.id_str}`).forEach((count) => {
+                    count.textContent = json.count;
+                });
+            });
+        });
+    }
 
     icon = document.createElement("img");
-    icon.src = "/static/img/heart-outline.svg";
-    icon.className = "svg";
+    icon.classList = [`LikeIcon-${board.id_str}`];
+    if (board.iliked) {
+        icon.src = "/static/img/heart.svg";
+    }else{
+        icon.src = "/static/img/heart-outline.svg";
+        icon.classList.add("svg");
+    }
     icon.width = "27";
     icon.loading = "lazy";
     actionElement.appendChild(icon);
 
     count = document.createElement("span");
-    count.className = "board-count";
-    count.innerText = "0";
+    count.classList = ["board-count"];
+    count.classList.add(`LikeCount-${board.id_str}`);
+    count.textContent = board.liked_id.length;
     actionElement.appendChild(count);
 
     boardActions.appendChild(actionElement);
@@ -196,7 +235,7 @@ function addPostToTimeline(board) {
             await navigator.share({
                 title: "ボード(投稿)をシェア",
                 text: `Nyanfeedで${board.user.display_name}さんの投稿(投稿)を見ました！`,
-                url: `https://htnmk.com/@${board.user.username}/boards/${BigInt(board.id)}`,
+                url: `https://htnmk.com/@${board.user.username}/boards/${board.id_str}`,
             });
         } catch (err) {
             console.log(err);
@@ -230,7 +269,11 @@ socket.onmessage = function(event) {
 };
 
 async function loadBoards() {
-    response = await fetch("/api/timeline/latest");
+    response = await fetch("/api/timeline/latest", {
+        headers: {
+            "Authorization": `Bearer ${getCookie("token")}`
+        }
+    });
     jsonData = await response.json();
 
     jsonData.slice().reverse().forEach(board => {

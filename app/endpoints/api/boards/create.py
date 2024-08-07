@@ -1,10 +1,10 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, File, UploadFile, Form, HTTPException, Request
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 
-from ...websocket import ConnectionManager
 from ....objects import User
 from ....services import BoardService, UserAuthService
+from ...websocket import ConnectionManager
 
 router = APIRouter()
 
@@ -16,11 +16,14 @@ async def createBoard(
     user: User = Depends(UserAuthService.getUserFromBearerToken),
     file: Optional[UploadFile] = File(None, include_in_schema=False),
 ):
-    print("post")
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Bearer authentication required",
+            headers={"WWW-Authenticate": 'Bearer realm="auth_required"'},
+        )
     form = await request.form()
-    print(form)
     files = form.getlist("files[]") if form.getlist("files[]") is not None else []
-    print(form.get("files"))
     if form.get("files") and form.get("files").size != 0:
         files.append(form.get("files"))
     if files is None:

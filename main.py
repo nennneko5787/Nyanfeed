@@ -12,4 +12,6 @@ app.include_router(importlib.import_module("app.endpoints.api.auth.register").ro
 app.include_router(importlib.import_module("app.endpoints.api.auth.login").router)
 app.include_router(importlib.import_module("app.endpoints.api.timeline.latest").router)
 app.include_router(importlib.import_module("app.endpoints.api.boards.create").router)
+app.include_router(importlib.import_module("app.endpoints.api.boards.board").router)
+app.include_router(importlib.import_module("app.endpoints.api.boards.like").router)
 app.include_router(importlib.import_module("app.endpoints.api.users.me").router)

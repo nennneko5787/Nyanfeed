@@ -15,11 +15,7 @@ class UserAuthService:
         bearer: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False)),
     ):
         if bearer is None:
-            raise HTTPException(
-                status_code=401,
-                detail="Bearer authentication required",
-                headers={"WWW-Authenticate": 'Bearer realm="auth_required"'},
-            )
+            return None
 
         conn: asyncpg.Connection = await asyncpg.connect(Env.get("dsn"))
 
