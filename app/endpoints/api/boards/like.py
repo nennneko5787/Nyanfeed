@@ -19,6 +19,9 @@ async def getBoard(
         )
     iliked, count = await BoardService.toggleLikeBoard(boardId, user)
     await ConnectionManager.sendLike(
-        boardId=boardId, iliked=iliked, count=count, user=user
+        boardId=boardId,
+        iliked=iliked,
+        count=count,
+        user=User.model_validate(user.model_dump()),
     )
     return {"iliked": iliked, "count": count}
