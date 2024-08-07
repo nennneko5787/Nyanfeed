@@ -40,7 +40,7 @@ function timeAgo(date) {
 
 function addPostToTimeline(board) {
     if (document.querySelector(`[x-nyanfeed-board-id="${board.id_str}"]`)) {
-        return
+        return;
     }
 
     // Create the main board div
@@ -265,8 +265,22 @@ function addPostToTimeline(board) {
 socket.onmessage = function(event) {
     const message = JSON.parse(event.data);
     console.log(message);
-    if (message.type == "board"){
+    if (message.type == "board") {
         addPostToTimeline(message.data);
+    } else if (message.type == "liked") {
+        document.querySelectorAll(`.LikeIcon-${board.id_str}`).forEach((icon) => {
+            if (message.data.iliked) {
+                icon.src = "/static/img/heart.svg";
+                icon.classList.remove("svg");
+            }else{
+                icon.src = "/static/img/heart-outline.svg";
+                icon.classList.add("svg");
+            }
+        });
+
+        document.querySelectorAll(`.LikeCount-${board.id_str}`).forEach((count) => {
+            count.textContent = message.data.count;
+        });
     }
 };
 

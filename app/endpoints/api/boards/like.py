@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 
+from ...websocket import ConnectionManager
 from ....objects import Board, User
 from ....services import BoardService, UserAuthService
 
@@ -17,4 +18,15 @@ async def getBoard(
             headers={"WWW-Authenticate": 'Bearer realm="auth_required"'},
         )
     iliked, count = await BoardService.toggleLikeBoard(board_id, user)
+    await ConnectionManager.broadcast(
+        {
+            "type": "liked",
+            "data": {
+                "board_id": board_id,
+                "board_id_str": str(board_id),
+                "iliked": iliked,
+                "count": count,
+            },
+        }
+    )
     return {"iliked": iliked, "count": count}
