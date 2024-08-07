@@ -1,9 +1,9 @@
 import asyncio
 from typing import List
 
-from fastapi import APIRouter, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from ..objects import WebSocket, User
+from ..objects import User
 from ..services import UserAuthService
 
 router = APIRouter()
@@ -11,6 +11,7 @@ router = APIRouter()
 
 class ConnectionManager:
     active_connections: List[WebSocket] = []
+    user: List[User] = []
 
     @classmethod
     async def connect(cls, websocket: WebSocket):
@@ -36,7 +37,7 @@ class ConnectionManager:
     async def sendLike(cls, *, boardId: int, iliked: bool, count: int, user: User):
         connections = []
         for connection in cls.active_connections:
-            if user.id == connection.nfuser.id:
+            if user.id == ConnectionManager.user[connection]:
                 connections.append(
                     connection.send_json(
                         {
@@ -80,7 +81,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 if not user:
                     await websocket.send_json({"type": "login_failed"})
                 else:
-                    websocket.nfuser = user
+                    ConnectionManager.user[websocket] = user
                     print(f"logined {user.username}")
                     await websocket.send_json({"type": "login_success"})
 
