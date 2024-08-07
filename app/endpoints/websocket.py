@@ -37,7 +37,10 @@ class ConnectionManager:
     async def sendLike(cls, *, boardId: int, iliked: bool, count: int, user: User):
         connections = []
         for connection in cls.active_connections:
-            if user.id == ConnectionManager.user[connection].id:
+            if (
+                connection in ConnectionManager.user
+                and user.id == ConnectionManager.user[connection].id
+            ):
                 connections.append(
                     connection.send_json(
                         {
