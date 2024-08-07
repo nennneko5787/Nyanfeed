@@ -309,8 +309,8 @@ async function loadBoards(page = 0, clear = false, reverse = false) {
     });
 }
 
-let currentPage = 0;
-let loading = false;
+var currentPage = 0;
+var loading = false;
 
 document.getElementById("scrollevent").addEventListener('scroll', () => {
     if (!loading && document.getElementById("scrollevent").scrollHeight - document.getElementById("scrollevent").scrollTop <= document.getElementById("scrollevent").clientHeight) {

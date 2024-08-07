@@ -29,6 +29,17 @@ async function initializeHomeScreen(path) {
     });
 }
 
+function router(path) {
+    window.history.pushState({}, "", path);
+    routerBackend();
+}
+
+async function routerBackend() {
+    if (window.location.pathname == "/home") {
+        await initializeHomeScreen("timeline");
+    }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     const userCookie = getCookie("userid");
     const userFromLocalStorage = localStorage.getItem("user");
@@ -51,9 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("smart-toggle-icon").src = user.icon;
     document.getElementById("smart-toggle-icon").className = "";
 
-    if (window.location.pathname == "/home") {
-        await initializeHomeScreen("timeline");
-    }
+    await router();
 
     document.getElementById("postDialog").onsubmit = (event) => {
         event.stopPropagation(); // Prevent the default form submission
