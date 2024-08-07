@@ -1,3 +1,4 @@
+import asyncio
 from typing import List
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
@@ -23,8 +24,10 @@ class ConnectionManager:
 
     @classmethod
     async def broadcast(cls, data: dict):
-        for connection in cls.active_connections:
-            connection.send_json(data)
+        connections = [
+            connection.send_json(data) for connection in cls.active_connections
+        ]
+        await asyncio.gather(*connections)
 
 
 @router.websocket("/ws")

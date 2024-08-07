@@ -16,7 +16,8 @@ function timeAgo(date) {
     const year = 365 * day;   // 1年のミリ秒数（おおよそ）
 
     if (diff < minute) {
-        return '数秒前';
+        const seconds = Math.floor(diff / 1000);
+        return `${seconds}秒前`;
     } else if (diff < hour) {
         const minutes = Math.floor(diff / minute);
         return `${minutes}分前`;
@@ -272,16 +273,6 @@ socket.onmessage = function(event) {
     if (message.type == "board") {
         addPostToTimeline(message.data);
     } else if (message.type == "liked") {
-        document.querySelectorAll(`.LikeIcon-${message.data.board_id_str}`).forEach((icon) => {
-            if (message.data.iliked) {
-                icon.src = "/static/img/heart.svg";
-                icon.classList.remove("svg");
-            }else{
-                icon.src = "/static/img/heart-outline.svg";
-                icon.classList.add("svg");
-            }
-        });
-
         document.querySelectorAll(`.LikeCount-${message.data.board_id_str}`).forEach((count) => {
             count.textContent = message.data.count;
         });

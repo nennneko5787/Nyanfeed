@@ -24,7 +24,6 @@ async def getBoard(
             "data": {
                 "board_id": board_id,
                 "board_id_str": str(board_id),
-                "iliked": iliked,
                 "count": count,
             },
         }
