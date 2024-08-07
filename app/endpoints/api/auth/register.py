@@ -35,17 +35,16 @@ async def register(model: RegisterModel):
     if not tsResponse.success:
         raise HTTPException(400, "FAILED_TO_VERIFY_CAPTHCA")
 
-    conn: asyncpg.Connection = await asyncpg.connect(Env.get("dsn"))
     try:
-        user: asyncpg.Record = await conn.fetchrow(
+        user: asyncpg.Record = Env.pool.fetchrow(
             "SELECT * FROM users WHERE username_lower = $1", model.username.lower()
         )
     except:
-        await conn.close()
+        Env.pool.close()
         raise HTTPException(500, "DATABASE_ERROR")
 
     if user:
-        await conn.close()
+        Env.pool.close()
         raise HTTPException(400, "USERNAME_ALREADY_EXISTS")
 
     gen = SnowflakeGenerator(42)
@@ -53,7 +52,7 @@ async def register(model: RegisterModel):
     userId = next(gen)
 
     try:
-        await conn.execute(
+        Env.pool.execute(
             """
                 INSERT INTO users
                 (id, username, username_lower, password)
@@ -65,13 +64,13 @@ async def register(model: RegisterModel):
             model.password,
         )
     except:
-        await conn.close()
+        Env.pool.close()
         raise HTTPException(500, "DATABASE_ERROR")
 
     token = Env.token(30)
 
     try:
-        await conn.execute(
+        Env.pool.execute(
             """
                 INSERT INTO tokens
                 (token, user_id)
@@ -81,10 +80,10 @@ async def register(model: RegisterModel):
             userId,
         )
     except:
-        await conn.close()
+        Env.pool.close()
         raise HTTPException(500, "DATABASE_ERROR")
 
-    await conn.close()
+    Env.pool.close()
 
     return {
         "detail": "registed",

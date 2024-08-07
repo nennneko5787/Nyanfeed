@@ -5,3 +5,4 @@ python-dotenv
 bcrypt
 snowflake-id
 aioboto3
+sqlalchemy

@@ -2,6 +2,8 @@ import os
 import random
 import string
 
+import asyncpg
+
 if os.path.isfile(".env"):
     from dotenv import load_dotenv
 
@@ -9,6 +11,8 @@ if os.path.isfile(".env"):
 
 
 class Env:
+    pool: asyncpg.Pool = None
+
     @classmethod
     def get(cls, key: str):
         return os.getenv(key)

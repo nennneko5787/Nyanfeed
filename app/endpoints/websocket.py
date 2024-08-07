@@ -24,7 +24,7 @@ class ConnectionManager:
     @classmethod
     async def broadcast(cls, data: dict):
         for connection in cls.active_connections:
-            await connection.send_json(data)
+            connection.send_json(data)
 
 
 @router.websocket("/ws")

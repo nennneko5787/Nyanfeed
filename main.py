@@ -1,9 +1,20 @@
 import importlib
+from contextlib import asynccontextmanager
 
+import asyncpg
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-app = FastAPI(title="Nyanfeed", summary="Social Network Service")
+from app import Env
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Env.pool = await asyncpg.create_pool(Env.get("dsn"))
+    yield
+
+
+app = FastAPI(title="Nyanfeed", summary="Social Network Service", lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(importlib.import_module("app.endpoints.frontend").router)

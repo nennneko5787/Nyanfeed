@@ -27,6 +27,8 @@ class Board(BaseModel):
     liked_id: List[int]
     liked_id_str: List[str] = []
     iliked: bool = False
+    replys_count: int = 0
+    reboards_count: int = 0
 
     @field_serializer("created_at")
     def convertCreatedAt(self, dt: datetime) -> str:

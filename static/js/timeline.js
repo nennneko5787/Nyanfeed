@@ -136,7 +136,7 @@ function addPostToTimeline(board) {
 
     let count = document.createElement("span");
     count.className = "board-count";
-    count.textContent = "0";
+    count.textContent = board.replys_count;
     actionElement.appendChild(count);
 
     boardActions.appendChild(actionElement);
@@ -155,7 +155,7 @@ function addPostToTimeline(board) {
 
     count = document.createElement("span");
     count.className = "board-count";
-    count.textContent = "0";
+    count.textContent = board.reboards_count;
     actionElement.appendChild(count);
 
     boardActions.appendChild(actionElement);
@@ -268,17 +268,25 @@ socket.onmessage = function(event) {
     }
 };
 
-async function loadBoards() {
-    response = await fetch("/api/timeline/latest", {
+async function loadBoards(page = 0, clear = false) {
+    if (clear) {
+        document.getElementById("boards").innerHTML = '<div style="display: flex; justify-content: center; align-items: center;"><div class="loading"></div></div>';
+    }
+
+    response = await fetch(`/api/timeline/latest?page=${page}`, {
         headers: {
             "Authorization": `Bearer ${getCookie("token")}`
         }
     });
     jsonData = await response.json();
 
+    if (clear) {
+        document.getElementById("boards").innerHTML = "";
+    }
+
     jsonData.slice().reverse().forEach(board => {
         addPostToTimeline(board);
     });
 }
 
-loadBoards();
+loadBoards(0, true);

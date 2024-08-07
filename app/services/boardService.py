@@ -11,6 +11,7 @@ from snowflake import SnowflakeGenerator
 
 from .. import Env
 from ..objects import Board, BoardNotFoundError, UnauthorizedFileExtensionError, User
+from .userService import UserService
 
 
 class BoardService:
@@ -31,118 +32,58 @@ class BoardService:
 
     @classmethod
     async def getLocalTimeLine(cls, page: int = 0, *, user: Optional[User] = None):
-        conn: asyncpg.Connection = await asyncpg.connect(Env.get("dsn"))
-        try:
-            _boards = await conn.fetch(
-                "SELECT * FROM boards ORDER BY created_at DESC LIMIT 20 OFFSET $1",
-                page * 20,
-            )
-        except Exception as e:
-            await conn.close()
-            raise e
+        _boards = await Env.pool.fetch(
+            """
+                SELECT boards.id, boards.content, boards.reply_id, boards.reboard_id, boards.user_id, boards.created_at, boards.edited_at, boards.attachments, boards.liked_id,
+                    (SELECT COUNT(*) FROM boards AS b WHERE b.reply_id = boards.id) AS replys_count,
+                    (SELECT COUNT(*) FROM boards AS b WHERE b.reboard_id = boards.id) AS reboards_count,
+                    r.id AS reply_id,
+                    rb.id AS reboard_id
+                FROM boards
+                LEFT JOIN boards AS r ON boards.reply_id = r.id
+                LEFT JOIN boards AS rb ON boards.reboard_id = rb.id
+                ORDER BY boards.created_at DESC
+                LIMIT 20 OFFSET $1;
+            """,
+            page * 20,
+        )
         boards = []
-        await conn.close()
         tasks = [cls.dictToBoard(dict(board), user=user) for board in _boards]
         boards = await asyncio.gather(*tasks)
         return boards
 
     @classmethod
-    async def getBoard(cls, boardId: int, *, user: Optional[User] = None):
-        conn: asyncpg.Connection = await asyncpg.connect(Env.get("dsn"))
-        try:
-            _board = await conn.fetchrow("SELECT * FROM boards WHERE id = $1", boardId)
-            if _board is None:
-                raise ValueError(f"Board with id {boardId} does not exist.")
-        except Exception as e:
-            await conn.close()
-            raise e
-        await conn.close()
+    async def getBoard(cls, board_id: int, *, user: Optional[User] = None):
+        _board = await Env.pool.fetchrow(
+            """
+                SELECT boards.id, boards.content, boards.reply_id, boards.reboard_id, boards.user_id, boards.created_at, boards.edited_at, boards.attachments, boards.liked_id,
+                    (SELECT COUNT(*) FROM boards AS b WHERE b.reply_id = boards.id) AS replys_count,
+                    (SELECT COUNT(*) FROM boards AS b WHERE b.reboard_id = boards.id) AS reboards_count,
+                    r.id AS reply_id,
+                    rb.id AS reboard_id
+                FROM boards
+                LEFT JOIN boards AS r ON boards.reply_id = r.id
+                LEFT JOIN boards AS rb ON boards.reboard_id = rb.id
+                WHERE boards.id = $1;
+            """,
+            board_id,
+        )
         board = await cls.dictToBoard(dict(_board), user=user)
         return board
 
-    @staticmethod
-    async def fetch_user(user_id):
-        conn = await asyncpg.connect(Env.get("dsn"))
-        try:
-            user_row = await conn.fetchrow("SELECT * FROM users WHERE id = $1", user_id)
-        finally:
-            await conn.close()
-        return User.model_validate(dict(user_row))
-
-    @staticmethod
-    async def fetch_replys_count(board_id):
-        conn = await asyncpg.connect(Env.get("dsn"))
-        try:
-            replys_count = await conn.fetchval(
-                "SELECT COUNT(*) FROM boards WHERE reply_id = $1", board_id
-            )
-        finally:
-            await conn.close()
-        return replys_count
-
-    @staticmethod
-    async def fetch_reboards_count(board_id):
-        conn = await asyncpg.connect(Env.get("dsn"))
-        try:
-            reboards_count = await conn.fetchval(
-                "SELECT COUNT(*) FROM boards WHERE reboard_id = $1", board_id
-            )
-        finally:
-            await conn.close()
-        return reboards_count
-
-    @classmethod
-    async def fetch_reply(cls, reply_id: int):
-        if reply_id is None:
-            return None
-        conn = await asyncpg.connect(Env.get("dsn"))
-        try:
-            reply_row = await conn.fetchrow(
-                "SELECT * FROM boards WHERE id = $1", reply_id
-            )
-        finally:
-            await conn.close()
-        return await cls.dictToBoard(dict(reply_row))
-
-    @classmethod
-    async def fetch_reboard(cls, reboard_id: int):
-        if reboard_id is None:
-            return None
-        conn = await asyncpg.connect(Env.get("dsn"))
-        try:
-            reboard_row = await conn.fetchrow(
-                "SELECT * FROM boards WHERE id = $1", reboard_id
-            )
-        finally:
-            await conn.close()
-        return await cls.dictToBoard(dict(reboard_row))
-
     @classmethod
     async def dictToBoard(cls, board, *, user: Optional[User] = None):
-        try:
-            user_task = cls.fetch_user(board["user_id"])
-            replys_count_task = cls.fetch_replys_count(board["id"])
-            reboards_count_task = cls.fetch_reboards_count(board["id"])
-            reply_task = cls.fetch_reply(board.get("reply_id"))
-            reboard_task = cls.fetch_reboard(board.get("reboard_id"))
-
-            user, replys_count, reboards_count, reply, reboard = await asyncio.gather(
-                user_task,
-                replys_count_task,
-                reboards_count_task,
-                reply_task,
-                reboard_task,
-            )
-
-            board["user"] = user
-            board["replys_count"] = replys_count
-            board["reboards_count"] = reboards_count
-            board["reply"] = reply
-            board["reboard"] = reboard
-
-        except Exception as e:
-            raise e
-
+        board["user"] = await UserService.getUser(board["user_id"])
+        board["reply"] = (
+            await UserService.getUser(board["reply_id"])
+            if board["reply_id"] is not None
+            else None
+        )
+        board["reboard"] = (
+            await UserService.getUser(board["reboard_id"])
+            if board["reboard_id"] is not None
+            else None
+        )
         board = Board.model_validate(board)
         if user:
             if user.id in board.liked_id:
@@ -161,26 +102,17 @@ class BoardService:
         reboard_id: Optional[int] = None,
         files: Optional[List[UploadFile]] = None,
     ):
-        conn: asyncpg.Connection = await asyncpg.connect(Env.get("dsn"))
         content = html.escape(content)
 
         if reply_id:
-            try:
-                row = await conn.execute("SELECT * FROM boards WHERE id = $1", reply_id)
-            except Exception as e:
-                await conn.close()
-                raise e
+            row = await Env.pool.execute("SELECT * FROM boards WHERE id = $1", reply_id)
             if not row:
                 raise BoardNotFoundError()
 
         if reboard_id:
-            try:
-                row = await conn.execute(
-                    "SELECT * FROM boards WHERE id = $1", reboard_id
-                )
-            except Exception as e:
-                await conn.close()
-                raise e
+            row = await Env.pool.execute(
+                "SELECT * FROM boards WHERE id = $1", reboard_id
+            )
             if not row:
                 raise BoardNotFoundError()
 
@@ -208,20 +140,16 @@ class BoardService:
                     await client.upload_fileobj(file, "nyanfeed", fileId)
                     await asyncio.sleep(0)
 
-        try:
-            board = await conn.fetchrow(
-                "INSERT INTO boards (id, user_id, reply_id, reboard_id, content, attachments, liked_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
-                boardId,
-                user.id,
-                reply_id,
-                reboard_id,
-                content,
-                filesKey,
-                [],
-            )
-        except Exception as e:
-            await conn.close()
-            raise e
+        board = await Env.pool.fetchrow(
+            "INSERT INTO boards (id, user_id, reply_id, reboard_id, content, attachments, liked_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
+            boardId,
+            user.id,
+            reply_id,
+            reboard_id,
+            content,
+            filesKey,
+            [],
+        )
 
         board = await cls.dictToBoard(dict(board))
         return board
@@ -230,14 +158,9 @@ class BoardService:
     async def toggleLikeBoard(cls, board_id: int, user: User):
         iliked = False
 
-        conn: asyncpg.Connection = await asyncpg.connect(Env.get("dsn"))
-        try:
-            liked_id: List[int] = await conn.fetchval(
-                "SELECT liked_id FROM boards WHERE id = $1", board_id
-            )
-        except Exception as e:
-            await conn.close()
-            raise e
+        liked_id: List[int] = await Env.pool.fetchval(
+            "SELECT liked_id FROM boards WHERE id = $1", board_id
+        )
 
         if not liked_id:
             liked_id = []
@@ -250,13 +173,8 @@ class BoardService:
 
         count = len(liked_id)
 
-        try:
-            await conn.execute(
-                "UPDATE boards SET liked_id = $1 WHERE id = $2", liked_id, board_id
-            )
-        except Exception as e:
-            await conn.close()
-            raise e
+        await Env.pool.execute(
+            "UPDATE boards SET liked_id = $1 WHERE id = $2", liked_id, board_id
+        )
 
-        await conn.close()
         return iliked, count

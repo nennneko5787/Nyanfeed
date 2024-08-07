@@ -8,6 +8,7 @@
     </div>
 
     <div class="boards" id="boards">
+        <div style="display: flex; justify-content: center; align-items: center;"><div class="loader"></div></div>
     </div>
 
     <script src="/static/js/timeline.js"></script>
