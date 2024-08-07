@@ -39,7 +39,9 @@ function timeAgo(date) {
 }
 
 function addPostToTimeline(board) {
-    console.log(board);
+    if (document.querySelector(`[x-nyanfeed-board-id="${board.id_str}"]`)) {
+        return
+    }
 
     // Create the main board div
     const boardElement = document.createElement('div');
@@ -288,5 +290,14 @@ async function loadBoards(page = 0, clear = false) {
         addPostToTimeline(board);
     });
 }
+
+let currentPage = 0;
+
+element.addEventListener('scroll', () => {
+    if (element.scrollHeight  -  element.scrollTop <= element.clientHeight) {
+        currentPage += 1;
+        loadBoards(currentPage, true);
+    }
+});
 
 loadBoards(0, true);
