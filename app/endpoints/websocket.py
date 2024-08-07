@@ -11,7 +11,7 @@ router = APIRouter()
 
 class ConnectionManager:
     active_connections: List[WebSocket] = []
-    user: List[User] = []
+    user: dict[User] = {}
 
     @classmethod
     async def connect(cls, websocket: WebSocket):
