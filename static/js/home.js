@@ -48,6 +48,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("myProfileIcon").src = user.icon;
     document.getElementById("myProfileName").innerText = user.display_name;
     document.getElementById("myProfileUserName").innerText = `@${user.username}`;
+    document.getElementById("smart-toggle-icon").src = user.icon;
+    document.getElementById("smart-toggle-icon").className = "";
 
     if (window.location.pathname == "/home") {
         await initializeHomeScreen("timeline");

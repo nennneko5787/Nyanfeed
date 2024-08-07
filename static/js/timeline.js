@@ -38,7 +38,7 @@ function timeAgo(date) {
     }
 }
 
-function addPostToTimeline(board) {
+function addPostToTimeline(board, reverse = false) {
     if (document.querySelector(`[x-nyanfeed-board-id="${board.id_str}"]`)) {
         return;
     }
@@ -259,7 +259,11 @@ function addPostToTimeline(board) {
     boardElement.appendChild(boardActions);
 
     // Append the board to the body or a specific container
-    document.getElementById("boards").prepend(boardElement);
+    if (!reverse){
+        document.getElementById("boards").prepend(boardElement);
+    }else{
+        document.getElementById("boards").appendChild(boardElement);
+    }
 }
 
 socket.onmessage = function(event) {
@@ -284,7 +288,7 @@ socket.onmessage = function(event) {
     }
 };
 
-async function loadBoards(page = 0, clear = false) {
+async function loadBoards(page = 0, clear = false, reverse = false) {
     if (clear) {
         document.getElementById("boards").innerHTML = '<div style="display: flex; justify-content: center; align-items: center;"><div class="loading"></div></div>';
     }
@@ -301,17 +305,25 @@ async function loadBoards(page = 0, clear = false) {
     }
 
     jsonData.slice().reverse().forEach(board => {
-        addPostToTimeline(board);
+        addPostToTimeline(board, reverse);
     });
 }
 
 let currentPage = 0;
+let loading = false;
 
-element.addEventListener('scroll', () => {
-    if (element.scrollHeight  -  element.scrollTop <= element.clientHeight) {
+document.getElementById("scrollevent").addEventListener('scroll', () => {
+    if (!loading && document.getElementById("scrollevent").scrollHeight - document.getElementById("scrollevent").scrollTop <= document.getElementById("scrollevent").clientHeight) {
+        loading = true;
+        let loadingElement = document.createElement("div");
+        loadingElement.style = "display: flex; justify-content: center; align-items: center;";
+        loadingElement.innerHTML = '<div class="loader"></div>';
+        document.getElementById("boards").appendChild(loadingElement);
         currentPage += 1;
-        loadBoards(currentPage, true);
+        loadBoards(currentPage, false, true);
+        document.getElementById("boards").removeChild(loadingElement);
+        loading = false;
     }
-});
+}, {passive: true});
 
-loadBoards(0, true);
+loadBoards(0, true, false);

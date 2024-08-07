@@ -10,7 +10,7 @@ from app import Env
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    Env.pool = await asyncpg.create_pool(Env.get("dsn"))
+    Env.pool = await asyncpg.create_pool(Env.get("dsn"), statement_cache_size=0)
     yield
 
 

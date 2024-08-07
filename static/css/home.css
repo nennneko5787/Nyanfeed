@@ -94,7 +94,7 @@ html, body {
 
 .content {
     width: 53%;
-    overflow: auto;
+    overflow-y: scroll;
 }
 
 .tab {
