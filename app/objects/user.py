@@ -15,6 +15,7 @@ class User(BaseModel):
     display_name: str
     description: Optional[str] = None
     raw_description: Optional[str] = None
+    badge: Optional[str] = None
 
     @field_serializer("created_at")
     def convertCreatedAt(self, dt: datetime) -> str:

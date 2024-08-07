@@ -135,3 +135,15 @@ label {
     margin-top: 1em;
     font-size: 50%;
 }
+
+a {
+    color: #00AAFF;
+}
+
+a:hover {
+    color: #0055AA;
+}
+
+a:active {
+    color: #003388;
+}

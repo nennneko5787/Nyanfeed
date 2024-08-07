@@ -73,6 +73,14 @@ function addPostToTimeline(board) {
     // Append profile icon and profileName to boardProfile
     boardProfile.appendChild(profileIcon);
     boardProfile.appendChild(profileName);
+    if (board.user.badge !== null){
+        let badge = document.createElement("img");
+        badge.className = "badge";
+        badge.src = `https://r2.htnmk.com/badges/${board.user.badge}.svg`;
+        badge.width = "20";
+        badge.loading = "lazy";
+        boardProfile.appendChild(badge);
+    }
     boardProfile.appendChild(boardDate);
 
     // Create the content section

@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from typing import List, Optional
 
@@ -32,6 +33,10 @@ class Board(BaseModel):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.raw_content = self.content
+        url_pattern = re.compile(
+            r"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)"
+        )
+        self.content = url_pattern.sub(r'<a href="\1">\1</a>', self.content)
         self.content = (
             self.content.replace("\r\n", "<br>")
             .replace("\r", "<br>")
