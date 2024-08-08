@@ -7,16 +7,16 @@ function getCookie(name) {
 // WebSocket connection
 let socket = new WebSocket(`//${window.location.hostname}/ws/${getCookie("token")}`);
 
-ws.onclose = function(e) {
+socket.onclose = function(e) {
     console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
     setTimeout(function() {
         socket = new WebSocket(`//${window.location.hostname}/ws/${getCookie("token")}`);
     }, 1000);
 };
 
-ws.onerror = function(err) {
+socket.onerror = function(err) {
     console.error('Socket encountered error: ', err.message, 'Closing socket');
-    ws.close();
+    socket.close();
 };
 
 async function initializeHomeScreen(path) {

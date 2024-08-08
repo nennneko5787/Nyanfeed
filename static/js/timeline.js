@@ -115,11 +115,43 @@ function addPostToTimeline(board, reverse = false) {
     }
 
     board.attachments.forEach((file) => {
-        imageElement = document.createElement("img");
-        imageElement.src = `https://r2.htnmk.com/${file}`;
-        imageElement.loading = "lazy";
-        boardAttachments.append(imageElement);
-    })
+        const fileExtension = file.split('.').pop();
+        let element;
+
+        switch (fileExtension) {
+            case "png":
+            case "apng":
+            case "gif":
+            case "jpeg":
+            case "jpg":
+            case "webp":
+                element = document.createElement("img");
+                element.src = `https://r2.htnmk.com/${file}`;
+                element.loading = "lazy";
+                break;
+            case "mp4":
+            case "webm":
+            case "ogg":
+                element = document.createElement("video");
+                element.src = `https://r2.htnmk.com/${file}`;
+                element.controls = true;
+                element.loading = "lazy";
+                break;
+            case "mpeg":
+            case "wav":
+            case "ogg":
+            case "webm":
+                element = document.createElement("audio");
+                element.src = `https://r2.htnmk.com/${file}`;
+                element.controls = true;
+                break;
+            default:
+                console.log(`Unsupported file type: ${fileExtension}`);
+                return;
+        }
+
+        boardAttachments.append(element);
+    });
 
     // Create the actions section
     const boardActions = document.createElement('div');

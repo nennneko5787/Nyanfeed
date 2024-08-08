@@ -10,7 +10,13 @@ from fastapi import UploadFile
 from snowflake import SnowflakeGenerator
 
 from .. import Env
-from ..objects import Board, BoardNotFoundError, UnauthorizedFileExtensionError, User
+from ..objects import (
+    Board,
+    BoardNotFoundError,
+    UnauthorizedFileExtensionError,
+    FileSizeTooLargeError,
+    User,
+)
 from .userService import UserService
 
 
@@ -135,6 +141,8 @@ class BoardService:
                         continue
                     if not file.content_type in cls.allowFileExtensions:
                         raise UnauthorizedFileExtensionError()
+                    if file.size >= 5242880:
+                        raise FileSizeTooLargeError()
                     fileId = f"boards/{boardId}/{next(gen)}{mimetypes.guess_extension(file.content_type)}"
                     filesKey.append(fileId)
                     await client.upload_fileobj(file, "nyanfeed", fileId)
