@@ -31,5 +31,8 @@ async def createBoard(
     if len(files) > 4:
         raise HTTPException(400)
     board = await BoardService.create(user=user, content=content, files=files)
-    await ConnectionManager.broadcast({"type": "board", "data": board.model_dump()})
+    try:
+        await ConnectionManager.broadcast({"type": "board", "data": board.model_dump()})
+    except:
+        pass
     return board
