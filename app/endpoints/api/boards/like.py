@@ -18,7 +18,10 @@ async def getBoard(
             headers={"WWW-Authenticate": 'Bearer realm="auth_required"'},
         )
     iliked, count = await BoardService.toggleLikeBoard(boardId, user)
-    await ConnectionManager.sendLike(
-        boardId=boardId, iliked=iliked, count=count, user=user
-    )
+    try:
+        await ConnectionManager.sendLike(
+            boardId=boardId, iliked=iliked, count=count, user=user
+        )
+    except:
+        pass
     return {"iliked": iliked, "count": count}
