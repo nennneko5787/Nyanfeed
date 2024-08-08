@@ -89,6 +89,10 @@ async function login() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    if (userFromLocalStorage != null && JSON.parse(userFromLocalStorage).id == userCookie) {
+        window.location.href = "/home";
+    }
+
     document.getElementById("openRegisterButton").onclick = openRegisterDialog;
     document.getElementById("openLoginButton").onclick = openLoginDialog;
 

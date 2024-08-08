@@ -321,25 +321,30 @@ socket.onmessage = function(event) {
     }
 };
 
-async function loadBoards(page = 0, clear = false, reverse = false) {
+async function loadBoards(page = 0, clear = false, reverse = false, arrrev = true) {
     if (clear) {
         document.getElementById("boards").innerHTML = '<div style="display: flex; justify-content: center; align-items: center;"><div class="loading"></div></div>';
     }
 
-    response = await fetch(`/api/timeline/latest?page=${page}`, {
+    const response = await fetch(`/api/timeline/latest?page=${page}`, {
         headers: {
             "Authorization": `Bearer ${getCookie("token")}`
         }
     });
-    jsonData = await response.json();
+    const jsonData = await response.json();
 
     if (clear) {
         document.getElementById("boards").innerHTML = "";
     }
 
-    jsonData.slice().reverse().forEach(board => {
-        addPostToTimeline(board, reverse);
-    });
+    if (arrrev) {
+        jsonData.reverse();
+    }
+
+    // Create an array of promises and wait for all of them to resolve
+    await Promise.all(jsonData.map(async (board) => {
+        await addPostToTimeline(board, reverse);
+    }));
 }
 
 var currentPage = 0;
@@ -350,13 +355,14 @@ document.getElementById("scrollevent").addEventListener('scroll', () => {
         loading = true;
         let loadingElement = document.createElement("div");
         loadingElement.style = "display: flex; justify-content: center; align-items: center;";
-        loadingElement.innerHTML = '<div class="loader"></div>';
-        document.getElementById("boards").appendChild(loadingElement);
+        loadingElement.innerHTML = '<div class="loading"></div>';
+        document.getElementById("boards").append(loadingElement);
         currentPage += 1;
-        loadBoards(currentPage, false, true);
-        document.getElementById("boards").removeChild(loadingElement);
-        loading = false;
+        loadBoards(currentPage, false, true, false).then(() => {
+            loadingElement.remove();
+            loading = false;
+        })
     }
 }, {passive: true});
 
-loadBoards(0, true, false);
+loadBoards(0, true, false, true);
