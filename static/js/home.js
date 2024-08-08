@@ -41,14 +41,18 @@ async function initializeHomeScreen(path) {
     });
 }
 
-function router(path) {
-    window.history.pushState({}, "", path);
-    routerBackend();
+async function router(path, nyanner, pushState = true) {
+    if (pushState) {
+        window.history.pushState({}, "", path);
+    }
+    await initializeHomeScreen(nyanner);
 }
 
-async function routerBackend() {
+async function firstPage(pushState = true) {
     if (window.location.pathname == "/home") {
-        await initializeHomeScreen("timeline");
+        await router("/home", "timeline", pushState);
+    }else if (window.location.pathname.match(/^\/@.*\/boards\/.*$/)){
+        await router(window.location.pathname, "board", pushState);
     }
 }
 
@@ -68,13 +72,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const user = JSON.parse(localStorage.getItem("user"));
 
-    document.getElementById("myProfileIcon").src = user.icon;
-    document.getElementById("myProfileName").innerText = user.display_name;
-    document.getElementById("myProfileUserName").innerText = `@${user.username}`;
-    document.getElementById("smart-toggle-icon").src = user.icon;
-    document.getElementById("smart-toggle-icon").className = "";
+    if (user) {
+        document.getElementById("myProfileIcon").src = user.icon;
+        document.getElementById("myProfileName").innerText = user.display_name;
+        document.getElementById("myProfileUserName").innerText = `@${user.username}`;
+        document.getElementById("smart-toggle-icon").src = user.icon;
+        document.getElementById("smart-toggle-icon").className = "";
+    }else{
+        document.querySelector(".navbar-content-bottom").innerHTML = `
+            <button class="button-primary" style="width: 100%;" role="button" onclick="window.location.href = '/';"><span class="text">ログイン・新規登録</span></button>
+        `;
+    }
 
-    await router();
+    await firstPage(true);
+
+    let before = "";
+    let after = window.location.pathname;
+
+    const pathLoop = setInterval(async () => {
+        after = window.location.pathname;
+        if (after != before) {
+            await firstPage(false);
+        }
+        before = window.location.pathname;
+    }, 100);
 
     document.getElementById("postDialog").onsubmit = (event) => {
         event.stopPropagation(); // Prevent the default form submission

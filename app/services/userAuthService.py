@@ -1,8 +1,4 @@
-import json
-
-import asyncpg
-from fastapi import Depends, Header, HTTPException, Security
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi import Header, HTTPException
 
 from .. import Env
 from ..objects import User
@@ -12,18 +8,19 @@ class UserAuthService:
     @classmethod
     async def getUserFromBearerToken(
         cls,
-        bearer: HTTPAuthorizationCredentials = Depends(HTTPBearer(auto_error=False)),
+        authorization: str = Header(None),
     ):
-        if bearer is None:
+        if not authorization:
             return None
 
+        bearer = authorization.split(" ")[1]
+
         user_id = await Env.pool.fetchval(
-            f"SELECT user_id FROM tokens WHERE token = $1",
-            bearer.credentials,
+            f"SELECT user_id FROM tokens WHERE token = $1", bearer
         )
 
         if not user_id:
-            raise HTTPException(status_code=401, detail="Invalid or expired token")
+            return None
 
         user = await Env.pool.fetchrow(
             f"SELECT * FROM users WHERE id = $1",
@@ -31,7 +28,7 @@ class UserAuthService:
         )
 
         if not user:
-            raise HTTPException(status_code=404, detail="User not found")
+            return None
 
         user = dict(user)
 

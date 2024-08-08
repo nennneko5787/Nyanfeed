@@ -136,3 +136,10 @@
 .badge {
     margin-left: 5px;
 }
+
+.board-datetime {
+    padding: 5px;
+    color: var(--background-two-color);
+    border-bottom: solid 1px;
+    border-bottom-color: var(--background-two-color);
+}

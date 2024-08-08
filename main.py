@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 import asyncpg
 from fastapi import FastAPI
+from fastapi.responses import ORJSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app import Env
@@ -14,7 +15,12 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Nyanfeed", summary="Social Network Service", lifespan=lifespan)
+app = FastAPI(
+    title="Nyanfeed",
+    summary="Social Network Service",
+    default_response_class=ORJSONResponse,
+    lifespan=lifespan,
+)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(importlib.import_module("app.endpoints.frontend").router)

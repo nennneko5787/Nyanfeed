@@ -1,6 +1,15 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    UploadFile,
+    BackgroundTasks,
+)
 
 from ....objects import User
 from ....services import BoardService, UserAuthService
@@ -11,6 +20,7 @@ router = APIRouter()
 
 @router.put("/api/boards")
 async def createBoard(
+    backgroundTasks: BackgroundTasks,
     request: Request,
     content: str = Form(...),
     user: User = Depends(UserAuthService.getUserFromBearerToken),
@@ -31,8 +41,7 @@ async def createBoard(
     if len(files) > 4:
         raise HTTPException(400)
     board = await BoardService.create(user=user, content=content, files=files)
-    try:
-        await ConnectionManager.broadcast({"type": "board", "data": board.model_dump()})
-    except:
-        pass
+    backgroundTasks.add_task(
+        ConnectionManager.broadcast, {"type": "board", "data": board.model_dump()}
+    )
     return board

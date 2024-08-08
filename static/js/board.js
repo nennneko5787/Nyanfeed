@@ -4,42 +4,7 @@ function getCookie(name) {
     return null;
 }
 
-function timeAgo(date) {
-    const now = new Date();
-    const diff = now - date; // 差分をミリ秒で計算
-
-    const minute = 60 * 1000; // 1分のミリ秒数
-    const hour = 60 * minute; // 1時間のミリ秒数
-    const day = 24 * hour;    // 1日のミリ秒数
-    const week = 7 * day;     // 1週間のミリ秒数
-    const month = 30 * day;   // 1ヶ月のミリ秒数（おおよそ）
-    const year = 365 * day;   // 1年のミリ秒数（おおよそ）
-
-    if (diff < minute) {
-        const seconds = Math.floor(diff / 1000);
-        return `${seconds}秒前`;
-    } else if (diff < hour) {
-        const minutes = Math.floor(diff / minute);
-        return `${minutes}分前`;
-    } else if (diff < day) {
-        const hours = Math.floor(diff / hour);
-        return `${hours}時間前`;
-    } else if (diff < week) {
-        const days = Math.floor(diff / day);
-        return `${days}日前`;
-    } else if (diff < month) {
-        const weeks = Math.floor(diff / week);
-        return `${weeks}週間前`;
-    } else if (diff < year) {
-        const months = Math.floor(diff / month);
-        return `${months}ヶ月前`;
-    } else {
-        const years = Math.floor(diff / year);
-        return `${years}年前`;
-    }
-}
-
-function addPostToTimeline(board, reverse = false) {
+function addPostToPage(board) {
     if (document.querySelector(`[x-nyanfeed-board-id="${board.id_str}"]`)) {
         return;
     }
@@ -74,13 +39,6 @@ function addPostToTimeline(board, reverse = false) {
     profileName.appendChild(profileDisplayName);
     profileName.appendChild(profileUsername);
 
-    createdAt = new Date(board.created_at)
-
-    const boardDate = document.createElement('div');
-    boardDate.classList.add('board-date');
-    boardDate.title = createdAt;
-    boardDate.textContent = timeAgo(createdAt);
-
     // Append profile icon and profileName to boardProfile
     boardProfile.appendChild(profileIcon);
     boardProfile.appendChild(profileName);
@@ -92,15 +50,11 @@ function addPostToTimeline(board, reverse = false) {
         badge.loading = "lazy";
         boardProfile.appendChild(badge);
     }
-    boardProfile.appendChild(boardDate);
 
     // Create the content section
     const boardContent = document.createElement('div');
     boardContent.classList.add('board-content');
     boardContent.innerHTML = board.content;
-    boardContent.onclick = async () => {
-        await router(`/@${board.user.username}/boards/${board.id_str}`, "board");
-    };
 
     // Create the attachment section
     const boardAttachments = document.createElement('div');
@@ -155,6 +109,12 @@ function addPostToTimeline(board, reverse = false) {
 
         boardAttachments.append(element);
     });
+
+    createdAt = new Date(board.created_at)
+
+    const boardDate = document.createElement('div');
+    boardDate.classList.add('board-datetime');
+    boardDate.textContent = createdAt.toLocaleString();
 
     // Create the actions section
     const boardActions = document.createElement('div');
@@ -292,21 +252,18 @@ function addPostToTimeline(board, reverse = false) {
     boardElement.appendChild(boardProfile);
     boardElement.appendChild(boardContent);
     boardElement.appendChild(boardAttachments);
+    boardElement.appendChild(boardDate);
     boardElement.appendChild(boardActions);
 
     // Append the board to the body or a specific container
-    if (!reverse){
-        document.getElementById("boards").prepend(boardElement);
-    }else{
-        document.getElementById("boards").appendChild(boardElement);
-    }
+    document.getElementById("boardInfo").appendChild(boardElement);
 }
 
 socket.onmessage = function(event) {
     const message = JSON.parse(event.data);
     console.log(message);
     if (message.type == "board") {
-        addPostToTimeline(message.data);
+        // 返信を取りに行こう
     } else if (message.type == "liked") {
         document.querySelectorAll(`.LikeIcon-${message.data.board_id_str}`).forEach((icon) => {
             if (message.data.iliked) {
@@ -324,48 +281,19 @@ socket.onmessage = function(event) {
     }
 };
 
-async function loadBoards(page = 0, clear = false, reverse = false, arrrev = true) {
-    if (clear) {
-        document.getElementById("boards").innerHTML = '<div style="display: flex; justify-content: center; align-items: center;"><div class="loading"></div></div>';
-    }
-
-    const response = await fetch(`/api/timeline/latest?page=${page}`, {
+async function loadBoard(boardId) {
+    const response = await fetch(`/api/boards/${boardId}`, {
         headers: {
             "Authorization": `Bearer ${getCookie("token")}`
         }
     });
     const jsonData = await response.json();
 
-    if (clear) {
-        document.getElementById("boards").innerHTML = "";
-    }
-
-    if (arrrev) {
-        jsonData.reverse();
-    }
+    document.getElementById("boardInfo").innerHTML = "";
 
     // Create an array of promises and wait for all of them to resolve
-    await Promise.all(jsonData.map(async (board) => {
-        await addPostToTimeline(board, reverse);
-    }));
+    await addPostToPage(jsonData);
 }
 
-var currentPage = 0;
-var loading = false;
-
-document.getElementById("scrollevent").addEventListener('scroll', () => {
-    if (!loading && document.getElementById("scrollevent").scrollHeight - document.getElementById("scrollevent").scrollTop <= document.getElementById("scrollevent").clientHeight) {
-        loading = true;
-        let loadingElement = document.createElement("div");
-        loadingElement.style = "display: flex; justify-content: center; align-items: center;";
-        loadingElement.innerHTML = '<div class="loading"></div>';
-        document.getElementById("boards").append(loadingElement);
-        currentPage += 1;
-        loadBoards(currentPage, false, true, false).then(() => {
-            loadingElement.remove();
-            loading = false;
-        })
-    }
-}, {passive: true});
-
-loadBoards(0, true, false, true);
+var letterId = window.location.href.split("/")[5];
+loadBoard(letterId);
