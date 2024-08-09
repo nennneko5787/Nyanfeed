@@ -20,6 +20,7 @@
     <meta name="revisit-after" content="1 day">
     <meta name="author" content="nennneko5787">
 
+    <link rel="stylesheet" href="/static/css/lightbox.css">
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/home.css">
     <link rel="stylesheet" href="/static/css/board.css">
@@ -60,7 +61,7 @@
             <div class="dialog">
                 <h4>投稿</h4>
                 <div class="dialog-content">
-                    <form id="registerForm">
+                    <form id="postForm">
                         <textarea name="content" class="postContent"></textarea>
                         <input type="file" name="files" multiple>
                         <p class="error" id="postError"></p>
@@ -84,5 +85,14 @@
         <div class="postButton">+</div>
 
     </div>
+
+    <script src="/static/js/jquery-3.7.1.min.js"></script>
+    <script src="/static/js/lightbox.js"></script>
+    <script>
+        lightbox.option({
+            'alwaysShowNavOnTouchDevices': true,
+            'fitImagesInViewport': true
+        })
+    </script>
 </body>
 </html>

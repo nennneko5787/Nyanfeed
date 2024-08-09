@@ -1,16 +1,16 @@
-function getCookie(name) {
+function getCookie(name, defaultValue = null, prefix = "") {
     let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-    if (match) return match[2];
-    return null;
+    if (match) return `${prefix}${match[2]}`;
+    return defaultValue;
 }
 
 // WebSocket connection
-let socket = new WebSocket(`//${window.location.hostname}/ws/${getCookie("token")}`);
+let socket = new WebSocket(`//${window.location.hostname}/ws${getCookie("token", "", "/")}`);
 
 socket.onclose = function(e) {
     console.log('Socket is closed. Reconnect will be attempted in 1 second.', e.reason);
     setTimeout(function() {
-        socket = new WebSocket(`//${window.location.hostname}/ws/${getCookie("token")}`);
+        socket = new WebSocket(`//${window.location.hostname}/ws/${getCookie("token", "", "/")}`);
     }, 1000);
 };
 
@@ -59,8 +59,9 @@ async function firstPage(pushState = true) {
 document.addEventListener("DOMContentLoaded", async () => {
     const userCookie = getCookie("userid");
     const userFromLocalStorage = localStorage.getItem("user");
+    const data = JSON.parse(userFromLocalStorage);
 
-    if (userFromLocalStorage == null || JSON.parse(userFromLocalStorage).id != userCookie) {
+    if (data == null || data.id != userCookie) {
         const response = await fetch("/api/users/me", {
             headers: {
                 "Authorization": `Bearer ${getCookie("token")}`

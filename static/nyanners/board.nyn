@@ -6,4 +6,18 @@
         <div style="display: flex; justify-content: center; align-items: center;"><div class="loader"></div></div>
     </div>
 
+    <div class="board-reply">
+        <form id="replyForm" style="margin-right: auto;">
+            <textarea name="content" class="replyContent"></textarea>
+            <input type="file" name="files" multiple>
+            <p class="error" id="replyError"></p>
+            <button class="button-primary" style="margin-right: 0; margin-left: auto;" role="submit"><span class="text">投稿</span></button>
+        </form>
+    </div>
+
+    <h2 style="padding: 10px;">返信</h2>
+
+    <div class="board-replys" id="boards"></div>
+
+    <script src="/static/js/timeline.js"></script>
     <script src="/static/js/board.js"></script>

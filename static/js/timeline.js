@@ -49,6 +49,20 @@ function addPostToTimeline(board, reverse = false) {
     boardElement.classList.add('board');
     boardElement.setAttribute("x-nyanfeed-board-id", board.id_str);
 
+    const boardReply = document.createElement("div");
+
+    if (board.reply != null) {
+        const boardReply = document.createElement("div");
+        boardReply.className = "board-replyed-to";
+        boardReply.innerHTML = `返信先: <a onclick="router('/@${board.reply.user.username}', 'user');">@${board.reply.user.username}</a>`;
+        boardElement.appendChild(boardReply);
+    }else if (board.reboard != null) {
+        const boardReply = document.createElement("div");
+        boardReply.className = "board-replyed-to";
+        boardReply.innerHTML = `<a onclick="router('/@${board.reboard.user.username}', 'user');">${board.reboard.user.display_name} さんがリボードしました</a>`;
+        boardElement.appendChild(boardReply);
+    }
+
     // Create the profile section
     const boardProfile = document.createElement('div');
     boardProfile.classList.add('board-profile');
@@ -118,6 +132,11 @@ function addPostToTimeline(board, reverse = false) {
     }
 
     board.attachments.forEach((file) => {
+        let pictureAElement = document.createElement("a");
+        pictureAElement.href = `https://r2.htnmk.com/${file}`;
+        pictureAElement.setAttribute("data-lightbox", board.id_str);
+        pictureAElement.setAttribute("data-title", file);
+
         const fileExtension = file.split('.').pop();
         let element;
 
@@ -153,7 +172,8 @@ function addPostToTimeline(board, reverse = false) {
                 return;
         }
 
-        boardAttachments.append(element);
+        pictureAElement.appendChild(element)
+        boardAttachments.appendChild(pictureAElement);
     });
 
     // Create the actions section
@@ -324,6 +344,8 @@ socket.onmessage = function(event) {
     }
 };
 
+var noLoadingRequired = false;
+
 async function loadBoards(page = 0, clear = false, reverse = false, arrrev = true) {
     if (clear) {
         document.getElementById("boards").innerHTML = '<div style="display: flex; justify-content: center; align-items: center;"><div class="loading"></div></div>';
@@ -344,6 +366,10 @@ async function loadBoards(page = 0, clear = false, reverse = false, arrrev = tru
         jsonData.reverse();
     }
 
+    if (jsonData.length <= 0) {
+        noLoadingRequired = true;
+    }
+
     // Create an array of promises and wait for all of them to resolve
     await Promise.all(jsonData.map(async (board) => {
         await addPostToTimeline(board, reverse);
@@ -354,7 +380,7 @@ var currentPage = 0;
 var loading = false;
 
 document.getElementById("scrollevent").addEventListener('scroll', () => {
-    if (!loading && document.getElementById("scrollevent").scrollHeight - document.getElementById("scrollevent").scrollTop <= document.getElementById("scrollevent").clientHeight) {
+    if (window.location.href == "/home" && !loading && !noLoadingRequired && document.getElementById("scrollevent").scrollHeight - document.getElementById("scrollevent").scrollTop <= document.getElementById("scrollevent").clientHeight) {
         loading = true;
         let loadingElement = document.createElement("div");
         loadingElement.style = "display: flex; justify-content: center; align-items: center;";
@@ -368,4 +394,7 @@ document.getElementById("scrollevent").addEventListener('scroll', () => {
     }
 }, {passive: true});
 
-loadBoards(0, true, false, true);
+if (window.location.pathname == "/home") {
+    document.querySelector(".postButton").style = "";
+    loadBoards(0, true, false, true);
+}

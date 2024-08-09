@@ -67,12 +67,20 @@
 
 .board-attachments {
     display: grid;
-    gap: 10px;
+    gap: 3px;
     width: 100%;
-    max-width: 90%;
     position: relative;
     overflow: hidden;
     justify-content: center;
+}
+
+.board-attachments img,
+.board-attachments video,
+.board-attachments audio {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
 }
 
 /* 1 attachment */
@@ -93,6 +101,7 @@
     grid-template-rows: 1fr 1fr;
 }
 
+/* 1枚目の画像 */
 .board-attachments.three-attachments img:nth-child(1),
 .board-attachments.three-attachments video:nth-child(1),
 .board-attachments.three-attachments audio:nth-child(1) {
@@ -100,32 +109,26 @@
     grid-column: 1 / 2;
 }
 
+/* 2枚目の画像 */
 .board-attachments.three-attachments img:nth-child(2),
 .board-attachments.three-attachments video:nth-child(2),
 .board-attachments.three-attachments audio:nth-child(2) {
-    grid-row: 1 / 2;
+    grid-row: 1 / 3;
     grid-column: 2 / 3;
 }
 
+/* 3枚目の画像 */
 .board-attachments.three-attachments img:nth-child(3),
 .board-attachments.three-attachments video:nth-child(3),
 .board-attachments.three-attachments audio:nth-child(3) {
     grid-row: 2 / 3;
-    grid-column: 1 / 3;
+    grid-column: 1 / 2;
 }
 
 /* 4 attachments */
 .board-attachments.four-attachments {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-}
-
-.board-attachments img,
-.board-attachments video {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    border-radius: 5px;
 }
 
 .board-date {
@@ -142,4 +145,33 @@
     color: var(--background-two-color);
     border-bottom: solid 1px;
     border-bottom-color: var(--background-two-color);
+}
+
+.board-reply {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+
+    border-top: solid 1px;
+    border-top-color: var(--background-two-color);
+
+    border-bottom: solid 1px;
+    border-bottom-color: var(--background-two-color);
+}
+
+.replyContent {
+    width: 90%;
+    height: 10em;
+    line-height: 1.5;
+}
+
+.board-small {
+    padding: 40px;
+    width: 80%;
+    height: 80%;
+}
+
+.board-replyed-to {
+    padding: 2px;
+    color: var(--background-two-color);
 }

@@ -4,14 +4,14 @@ function getCookie(name) {
     return null;
 }
 
-function addPostToPage(board) {
-    if (document.querySelector(`[x-nyanfeed-board-id="${board.id_str}"]`)) {
-        return;
-    }
-
+function addPostToPage(board, small = false) {
+    document.title = `${board.user.display_name} (@${board.user.username}) さん: ${board.raw_content.replace("\r", "").replace("\n", "")} - Nyanfeed`;
     // Create the main board div
     const boardElement = document.createElement('div');
     boardElement.classList.add('board');
+    if (small) {
+        boardElement.classList.add('board-small');
+    }
     boardElement.setAttribute("x-nyanfeed-board-id", board.id_str);
 
     // Create the profile section
@@ -55,6 +55,11 @@ function addPostToPage(board) {
     const boardContent = document.createElement('div');
     boardContent.classList.add('board-content');
     boardContent.innerHTML = board.content;
+    if (small) {
+        boardContent.onclick = async () => {
+            await router(`/@${board.user.username}/boards/${board.id_str}`, "board");
+        };
+    }
 
     // Create the attachment section
     const boardAttachments = document.createElement('div');
@@ -72,6 +77,11 @@ function addPostToPage(board) {
     }
 
     board.attachments.forEach((file) => {
+        let pictureAElement = document.createElement("a");
+        pictureAElement.href = `https://r2.htnmk.com/${file}`;
+        pictureAElement.setAttribute("data-lightbox", board.id_str);
+        pictureAElement.setAttribute("data-title", file);
+
         const fileExtension = file.split('.').pop();
         let element;
 
@@ -107,7 +117,8 @@ function addPostToPage(board) {
                 return;
         }
 
-        boardAttachments.append(element);
+        pictureAElement.appendChild(element)
+        boardAttachments.appendChild(pictureAElement);
     });
 
     createdAt = new Date(board.created_at)
@@ -291,9 +302,122 @@ async function loadBoard(boardId) {
 
     document.getElementById("boardInfo").innerHTML = "";
 
-    // Create an array of promises and wait for all of them to resolve
+    if (jsonData.reply != null) {
+        await addPostToPage(jsonData.reply, true);
+        console.log(jsonData.reply);
+    }
+
     await addPostToPage(jsonData);
 }
 
-var letterId = window.location.href.split("/")[5];
-loadBoard(letterId);
+var noLoadingRequired = false;
+
+async function loadReplys(page = 0, clear = false, reverse = false, arrrev = true) {
+    if (clear) {
+        document.getElementById("boards").innerHTML = '<div style="display: flex; justify-content: center; align-items: center;"><div class="loading"></div></div>';
+    }
+
+    const response = await fetch(`/api/boards/${boardId}/replys?page=${page}`, {
+        headers: {
+            "Authorization": `Bearer ${getCookie("token")}`
+        }
+    });
+    const jsonData = await response.json();
+
+    if (clear) {
+        document.getElementById("boards").innerHTML = "";
+    }
+
+    if (arrrev) {
+        jsonData.reverse();
+    }
+
+    if (jsonData.length <= 0) {
+        noLoadingRequired = true;
+    }
+
+    // Create an array of promises and wait for all of them to resolve
+    await Promise.all(jsonData.map(async (board) => {
+        await addPostToTimeline(board, reverse);
+    }));
+}
+
+var boardId = window.location.href.split("/")[5];
+
+document.getElementById("replyForm").onsubmit = (event) => {
+    event.stopPropagation(); // Prevent the default form submission
+    event.preventDefault()
+    event.submitter.disabled = true;
+
+    const formData = new FormData(event.target); // Create a FormData object from the form
+    formData.append("replyId", boardId);
+    console.log(formData.get("files[]"));
+
+    fetch('/api/boards', {
+        method: 'PUT',
+        headers: {
+            "Authorization": `Bearer ${getCookie("token")}`
+        },
+        body: formData,
+    })
+    .then(response => response.json()) // Assuming the server responds with JSON
+    .then(data => {
+        // Handle success
+        event.target.reset();
+        event.submitter.disabled = false;
+    })
+    .catch(error => {
+        // Handle error
+        console.error('Error:', error);
+        document.getElementById('replyError').textContent = 'An error occurred. Please try again.';
+        event.submitter.disabled = false;
+    });
+}
+
+socket.onmessage = function(event) {
+    const message = JSON.parse(event.data);
+    console.log(message);
+    if (message.type == "board") {
+        if (message.data.reply_id_str == boardId) {
+            addPostToTimeline(message.data);
+        }
+    } else if (message.type == "liked") {
+        document.querySelectorAll(`.LikeIcon-${message.data.board_id_str}`).forEach((icon) => {
+            if (message.data.iliked) {
+                icon.src = "/static/img/heart.svg";
+                icon.classList.remove("svg");
+            }else{
+                icon.src = "/static/img/heart-outline.svg";
+                icon.classList.add("svg");
+            }
+        });
+
+        document.querySelectorAll(`.LikeCount-${message.data.board_id_str}`).forEach((count) => {
+            count.textContent = message.data.count;
+        });
+    }
+};
+
+var currentPage = 0;
+var loading = false;
+
+document.getElementById("scrollevent").addEventListener('scroll', () => {
+    if (!loading && !noLoadingRequired && document.getElementById("scrollevent").scrollHeight - document.getElementById("scrollevent").scrollTop <= document.getElementById("scrollevent").clientHeight) {
+        loading = true;
+        let loadingElement = document.createElement("div");
+        loadingElement.style = "display: flex; justify-content: center; align-items: center;";
+        loadingElement.innerHTML = '<div class="loading"></div>';
+        document.getElementById("boards").append(loadingElement);
+        currentPage += 1;
+        loadReplys(currentPage, false, true, false).then(() => {
+            loadingElement.remove();
+            loading = false;
+        })
+    }
+}, {passive: true});
+
+document.querySelector(".postButton").style = "display: none";
+document.title = `ボード - Nyanfeed`;
+
+loadBoard(boardId);
+loadReplys(0, true, false, true);

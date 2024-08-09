@@ -74,19 +74,46 @@ class BoardService:
             """,
             board_id,
         )
+        print("a", _board)
         board = await cls.dictToBoard(dict(_board), user=user)
         return board
 
     @classmethod
-    async def dictToBoard(cls, board, *, user: Optional[User] = None):
+    async def getReplys(
+        cls, replyId: int, *, page: int = 0, user: Optional[User] = None
+    ):
+        _boards = await Env.pool.fetch(
+            """
+                SELECT boards.id, boards.content, boards.reply_id, boards.reboard_id, boards.user_id, boards.created_at, boards.edited_at, boards.attachments, boards.liked_id,
+                    (SELECT COUNT(*) FROM boards AS b WHERE b.reply_id = boards.id) AS replys_count,
+                    (SELECT COUNT(*) FROM boards AS b WHERE b.reboard_id = boards.id) AS reboards_count,
+                    r.id AS reply_id,
+                    rb.id AS reboard_id
+                FROM boards
+                LEFT JOIN boards AS r ON boards.reply_id = r.id
+                LEFT JOIN boards AS rb ON boards.reboard_id = rb.id
+                WHERE boards.reply_id = $1
+                ORDER BY boards.created_at DESC
+                LIMIT 20 OFFSET $2;
+            """,
+            replyId,
+            page * 20,
+        )
+        boards = []
+        tasks = [cls.dictToBoard(dict(board), user=user) for board in _boards]
+        boards = await asyncio.gather(*tasks)
+        return boards
+
+    @classmethod
+    async def dictToBoard(cls, board: dict, *, user: Optional[User] = None):
         board["user"] = await UserService.getUser(board["user_id"])
         board["reply"] = (
-            await UserService.getUser(board["reply_id"])
+            await cls.getBoard(board["reply_id"])
             if board["reply_id"] is not None
             else None
         )
         board["reboard"] = (
-            await UserService.getUser(board["reboard_id"])
+            await cls.getBoard(board["reboard_id"])
             if board["reboard_id"] is not None
             else None
         )
@@ -104,20 +131,20 @@ class BoardService:
         *,
         user: User,
         content: str,
-        reply_id: Optional[int] = None,
-        reboard_id: Optional[int] = None,
+        replyId: Optional[int] = None,
+        reboardId: Optional[int] = None,
         files: Optional[List[UploadFile]] = None,
     ):
         content = html.escape(content)
 
-        if reply_id:
-            row = await Env.pool.execute("SELECT * FROM boards WHERE id = $1", reply_id)
+        if replyId:
+            row = await Env.pool.execute("SELECT * FROM boards WHERE id = $1", replyId)
             if not row:
                 raise BoardNotFoundError()
 
-        if reboard_id:
+        if reboardId:
             row = await Env.pool.execute(
-                "SELECT * FROM boards WHERE id = $1", reboard_id
+                "SELECT * FROM boards WHERE id = $1", reboardId
             )
             if not row:
                 raise BoardNotFoundError()
@@ -152,13 +179,12 @@ class BoardService:
             "INSERT INTO boards (id, user_id, reply_id, reboard_id, content, attachments, liked_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
             boardId,
             user.id,
-            reply_id,
-            reboard_id,
+            replyId,
+            reboardId,
             content,
             filesKey,
             [],
         )
-
         board = await cls.dictToBoard(dict(board))
         return board
 

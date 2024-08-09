@@ -31,4 +31,5 @@ app.include_router(importlib.import_module("app.endpoints.api.timeline.latest").
 app.include_router(importlib.import_module("app.endpoints.api.boards.create").router)
 app.include_router(importlib.import_module("app.endpoints.api.boards.board").router)
 app.include_router(importlib.import_module("app.endpoints.api.boards.like").router)
+app.include_router(importlib.import_module("app.endpoints.api.boards.replys").router)
 app.include_router(importlib.import_module("app.endpoints.api.users.me").router)
