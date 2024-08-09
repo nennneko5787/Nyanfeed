@@ -292,6 +292,19 @@ socket.onmessage = function(event) {
     }
 };
 
+async function processReplies(replyData) {
+    if (replyData != null) {
+        // まずネストされたreplyを再帰的に処理
+        if (replyData.reply != null) {
+            await processReplies(replyData.reply);
+        }
+
+        // 最深部から順に処理
+        await addPostToPage(replyData, true);
+        console.log(replyData);
+    }
+}
+
 async function loadBoard(boardId) {
     const response = await fetch(`/api/boards/${boardId}`, {
         headers: {
@@ -303,8 +316,7 @@ async function loadBoard(boardId) {
     document.getElementById("boardInfo").innerHTML = "";
 
     if (jsonData.reply != null) {
-        await addPostToPage(jsonData.reply, true);
-        console.log(jsonData.reply);
+        await processReplies(jsonData.reply);
     }
 
     await addPostToPage(jsonData);
