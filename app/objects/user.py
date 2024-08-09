@@ -19,6 +19,7 @@ class User(BaseModel):
     description: Optional[str] = None
     raw_description: Optional[str] = None
     badge: Optional[str] = None
+    freezed: bool = False
 
     @field_serializer("created_at")
     def convertCreatedAt(self, dt: datetime) -> str:

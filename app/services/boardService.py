@@ -1,11 +1,9 @@
 import asyncio
 import html
 import mimetypes
-import traceback
 from typing import List, Optional
 
 import aioboto3
-import asyncpg
 from fastapi import UploadFile
 from snowflake import SnowflakeGenerator
 
@@ -15,6 +13,7 @@ from ..objects import (
     BoardNotFoundError,
     UnauthorizedFileExtensionError,
     FileSizeTooLargeError,
+    UserFreezedError,
     User,
 )
 from .userService import UserService
@@ -135,6 +134,9 @@ class BoardService:
         reboardId: Optional[int] = None,
         files: Optional[List[UploadFile]] = None,
     ):
+        if user.freezed:
+            raise UserFreezedError()
+
         content = html.escape(content)
 
         if replyId:
@@ -190,6 +192,9 @@ class BoardService:
 
     @classmethod
     async def toggleLikeBoard(cls, board_id: int, user: User):
+        if user.freezed:
+            raise UserFreezedError()
+
         iliked = False
 
         liked_id: List[int] = await Env.pool.fetchval(
