@@ -369,7 +369,9 @@ async function loadBoards(page = 0, clear = false, reverse = false, arrrev = tru
         jsonData.reverse();
     }
 
+    console.log(jsonData);
     if (jsonData.length <= 0) {
+        console.log("a");
         noLoadingRequired = true;
     }
 
@@ -383,7 +385,7 @@ var currentPage = 0;
 var loading = false;
 
 document.getElementById("scrollevent").addEventListener('scroll', () => {
-    if (window.location.href == "/home" && !loading && !noLoadingRequired && document.getElementById("scrollevent").scrollHeight - document.getElementById("scrollevent").scrollTop <= document.getElementById("scrollevent").clientHeight) {
+    if (window.location.pathname == "/home" && !loading && !noLoadingRequired && document.getElementById("scrollevent").scrollHeight - document.getElementById("scrollevent").scrollTop <= document.getElementById("scrollevent").clientHeight) {
         loading = true;
         let loadingElement = document.createElement("div");
         loadingElement.style = "display: flex; justify-content: center; align-items: center;";

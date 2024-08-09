@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     await firstPage(true);
 
-    let before = "";
+    let before = window.location.pathname;
     let after = window.location.pathname;
 
     const pathLoop = setInterval(async () => {

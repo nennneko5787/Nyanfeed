@@ -11,6 +11,7 @@ from fastapi import (
     BackgroundTasks,
 )
 
+from .... import Env
 from ....objects import User
 from ....services import BoardService, UserAuthService
 from ...websocket import ConnectionManager
@@ -18,6 +19,7 @@ from ...websocket import ConnectionManager
 router = APIRouter()
 
 
+@Env.limiter.limit("15/minute")
 @router.put("/api/boards")
 async def createBoard(
     backgroundTasks: BackgroundTasks,

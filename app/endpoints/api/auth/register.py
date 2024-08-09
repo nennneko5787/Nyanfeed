@@ -2,7 +2,7 @@ import re
 
 import asyncpg
 import bcrypt
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from snowflake import SnowflakeGenerator
 
@@ -24,8 +24,9 @@ def isValidUserName(s: str) -> bool:
     return bool(pattern.match(s))
 
 
+@Env.limiter.limit("2/hour")
 @router.post("/api/auth/register", include_in_schema=False)
-async def register(model: RegisterModel):
+async def register(request: Request, model: RegisterModel):
     if not isValidUserName(model.username) or len(model.username) > 14:
         raise HTTPException(400, "INVALID_USERNAME")
 

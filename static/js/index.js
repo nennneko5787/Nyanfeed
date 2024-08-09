@@ -91,8 +91,9 @@ async function login() {
 document.addEventListener("DOMContentLoaded", () => {
     const userCookie = getCookie("userid");
     const userFromLocalStorage = localStorage.getItem("user");
+    const data = JSON.parse(userFromLocalStorage);
 
-    if (userFromLocalStorage != null && JSON.parse(userFromLocalStorage).id == userCookie) {
+    if (data != null && data.id == userCookie) {
         window.location.href = "/home";
     }
 

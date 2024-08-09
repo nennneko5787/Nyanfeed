@@ -2,6 +2,8 @@ import os
 import random
 import string
 
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 import asyncpg
 
 if os.path.isfile(".env"):
@@ -12,6 +14,7 @@ if os.path.isfile(".env"):
 
 class Env:
     pool: asyncpg.Pool = None
+    limiter: Limiter = Limiter(key_func=get_remote_address)
 
     @classmethod
     def get(cls, key: str):

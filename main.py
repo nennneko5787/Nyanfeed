@@ -5,6 +5,8 @@ import asyncpg
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 from fastapi.staticfiles import StaticFiles
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 from app import Env
 
@@ -23,6 +25,8 @@ app = FastAPI(
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
 app.include_router(importlib.import_module("app.endpoints.frontend").router)
 app.include_router(importlib.import_module("app.endpoints.websocket").router)
 app.include_router(importlib.import_module("app.endpoints.api.auth.register").router)
