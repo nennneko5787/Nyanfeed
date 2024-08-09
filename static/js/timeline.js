@@ -184,6 +184,9 @@ function addPostToTimeline(board, reverse = false) {
     let actionElement = document.createElement("div");
     actionElement.className = "board-action";
     actionElement.title = "返信";
+    actionElement.onclick = async () => {
+        await router(`/@${board.user.username}/boards/${board.id_str}`, "board");
+    }
 
     let icon = document.createElement("img");
     icon.src = "/static/img/reply.svg";
