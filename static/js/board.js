@@ -274,7 +274,9 @@ socket.onmessage = function(event) {
     const message = JSON.parse(event.data);
     console.log(message);
     if (message.type == "board") {
-        // 返信を取りに行こう
+        if (message.data.reply_id_str == boardId) {
+            addPostToTimeline(message.data);
+        }
     } else if (message.type == "liked") {
         document.querySelectorAll(`.LikeIcon-${message.data.board_id_str}`).forEach((icon) => {
             if (message.data.iliked) {

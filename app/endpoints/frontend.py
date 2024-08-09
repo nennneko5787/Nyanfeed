@@ -29,6 +29,7 @@ async def index():
 
 
 @router.get("/home", response_class=HTMLResponse)
+@router.get("/@{username:str}", response_class=HTMLResponse)
 @router.get("/@{username:str}/boards/{boardId:int}", response_class=HTMLResponse)
 async def index():
     async with aiofiles.open("./pages/home.html", "r", encoding="utf-8") as f:

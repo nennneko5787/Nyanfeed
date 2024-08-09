@@ -1,0 +1,31 @@
+<div class="tab">
+    ユーザー
+</div>
+
+<div class="warning-bg">
+    <span style="color: #FFFFFF;">すみません。現在、開発中の画面を表示しています。もうちょっと開発してからユーザーのもとに届けようと思います。</span>
+</div>
+
+<div class="user-header">
+    <img src="https://pbs.twimg.com/profile_banners/1743513316612587520/1708726190/1500x500" />
+</div>
+
+<div class="user">
+    <div class="user-icon">
+        <img src="https://cdn.discordapp.com/guilds/1124309483703763025/users/1048448686914551879/avatars/a_ba81072cd3d173226a27249c358a7f9c.gif?size=2048" />
+        <button class="button-primary user-follow" role="button" id="openRegisterButton"><span class="text">フォロー</span></button>
+    </div>
+    <div class="user-names">
+        <h3 class="user-displayname">
+            ねんねこ
+        </h3>
+        <h4 class="user-username">
+            @nennneko5787
+        </h4>
+    </div>
+    <div class="user-description">
+        Nyanfeed developer
+    </div>
+</div>
+
+<script src="/static/js/profile.js"></script>

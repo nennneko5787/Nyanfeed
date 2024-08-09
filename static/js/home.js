@@ -53,6 +53,8 @@ async function firstPage(pushState = true) {
         await router("/home", "timeline", pushState);
     }else if (window.location.pathname.match(/^\/@.*\/boards\/.*$/)){
         await router(window.location.pathname, "board", pushState);
+    }else if (window.location.pathname.match(/^\/@.*$/)){
+        await router(window.location.pathname, "profile", pushState);
     }
 }
 

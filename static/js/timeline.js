@@ -400,6 +400,7 @@ document.getElementById("scrollevent").addEventListener('scroll', () => {
 }, {passive: true});
 
 if (window.location.pathname == "/home") {
+    document.title = "ホーム - Nyanfeed";
     document.querySelector(".postButton").style = "";
     loadBoards(0, true, false, true);
 }

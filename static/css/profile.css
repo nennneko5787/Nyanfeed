@@ -1,0 +1,48 @@
+.user {
+    padding: 20px;
+}
+
+.user-header {
+    padding: 0;
+
+    img {
+        width: 100%;
+        height: auto;
+    }
+}
+
+.user-icon {
+    display: flex;
+
+    transform: translateY(-70%);
+    img {
+        border: solid 5px;
+        border-color: var(--background-color);
+        border-radius: 60%;
+        width: 24%;
+        height: 24%;
+    }
+}
+
+.user-follow {
+    align-items: flex-end;
+    width: 20%;
+    height: 10%;
+    margin-top: 15%;
+    margin-left: auto;
+}
+
+.user-names {
+    margin-top: -19%;
+}
+
+.user-displayname {
+    margin: 10px;
+    margin-bottom: 1px;
+}
+
+.user-username {
+    margin: 10px;
+    margin-top: 1px;
+    color: var(--background-two-color);
+}
