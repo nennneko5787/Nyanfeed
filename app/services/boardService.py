@@ -137,7 +137,7 @@ class BoardService:
         if user.freezed:
             raise UserFreezedError()
 
-        if content.len() > 3000:
+        if len(content) > 3000:
             raise tooLongError()
 
         content = html.escape(content)
