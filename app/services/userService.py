@@ -75,7 +75,7 @@ class UserService:
     ):
         from .boardService import BoardService
 
-        if displayName.len() > 50:
+        if len(displayName) > 50:
             raise tooLongError()
 
         iconFileId = None
