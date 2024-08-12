@@ -1,31 +1,65 @@
+<div class="postDialog" id="editProfileDialog" style="display: none;">
+    <div class="dialog">
+        <h4>プロフィールを編集</h4>
+        <div class="dialog-content">
+            <form id="editProfileForm">
+                <label for="displayName">名前</label>
+                <input type="text" name="displayName" id="displayName">
+                <label for="description">自己紹介</label>
+                <textarea name="description" class="postContent" id="description"></textarea>
+                <label for="icon">アイコン</label>
+                <input type="file" name="icon">
+                <label for="header">ヘッダー画像</label>
+                <input type="file" name="header">
+                <p class="error" id="editProfileError"></p>
+                <button class="button-primary" style="width: 100%;" role="submit"><span class="text">保存</span></button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="tab">
     ユーザー
 </div>
 
-<div class="warning-bg">
-    <span style="color: #FFFFFF;">すみません。現在、開発中の画面を表示しています。もうちょっと開発してからユーザーのもとに届けようと思います。</span>
-</div>
-
 <div class="user-header">
-    <img src="https://pbs.twimg.com/profile_banners/1743513316612587520/1708726190/1500x500" />
+    <img />
 </div>
 
 <div class="user">
     <div class="user-icon">
-        <img src="https://cdn.discordapp.com/guilds/1124309483703763025/users/1048448686914551879/avatars/a_ba81072cd3d173226a27249c358a7f9c.gif?size=2048" />
-        <button class="button-primary user-follow" role="button" id="openRegisterButton"><span class="text">フォロー</span></button>
+        <img src="" />
+        <button class="button-primary user-follow" role="button" id="followButton"><span class="text">フォロー</span></button>
     </div>
-    <div class="user-names">
-        <h3 class="user-displayname">
-            ねんねこ
-        </h3>
-        <h4 class="user-username">
-            @nennneko5787
-        </h4>
+    <div class="username-flex">
+        <div class="user-names">
+            <h3 class="user-displayname"></h3>
+            <h4 class="user-username"></h4>
+        </div>
     </div>
-    <div class="user-description">
-        Nyanfeed developer
+    <div class="user-description"></div>
+    <div class="user-followersView">
+        <div class="user-following"></div>
+        <div class="user-followers"></div>
     </div>
+
+    <div class="tab">
+        <div class="tab-content tab-selected" id="tab-boards">
+            ボード
+        </div>
+        <div class="tab-content" id="tab-replies">
+            返信
+        </div>
+        <div class="tab-content" id="tab-media">
+            メディア
+        </div>
+        <div class="tab-content" id="tab-likes">
+            いいね
+        </div>
+    </div>
+
+    <div class="user-replys" id="boards"></div>
 </div>
 
 <script src="/static/js/profile.js"></script>
+<script src="/static/js/timeline.js"></script>

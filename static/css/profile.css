@@ -14,7 +14,7 @@
 .user-icon {
     display: flex;
 
-    transform: translateY(-70%);
+    margin-top: -20%;
     img {
         border: solid 5px;
         border-color: var(--background-color);
@@ -28,12 +28,12 @@
     align-items: flex-end;
     width: 20%;
     height: 10%;
-    margin-top: 15%;
+    margin-top: 18%;
     margin-left: auto;
 }
 
-.user-names {
-    margin-top: -19%;
+.username-flex {
+    display: flex;
 }
 
 .user-displayname {
@@ -45,4 +45,17 @@
     margin: 10px;
     margin-top: 1px;
     color: var(--background-two-color);
+}
+
+.user-followersView {
+    margin: 5px;
+    display: flex;
+}
+
+.user-following {
+    margin: 5px;
+}
+
+.user-followers {
+    margin: 5px;
 }

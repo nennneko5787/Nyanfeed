@@ -17,6 +17,9 @@ function addPostToPage(board, small = false) {
     // Create the profile section
     const boardProfile = document.createElement('div');
     boardProfile.classList.add('board-profile');
+    boardProfile.onclick = async () => {
+        await router(`/@${board.user.username}`, "profile");
+    };
 
     const profileIcon = document.createElement('img');
     profileIcon.classList.add('profile-icon');
@@ -42,14 +45,14 @@ function addPostToPage(board, small = false) {
     // Append profile icon and profileName to boardProfile
     boardProfile.appendChild(profileIcon);
     boardProfile.appendChild(profileName);
-    if (board.user.badge !== null){
+    board.user.badges.forEach((badgeUrl) => {
         let badge = document.createElement("img");
         badge.className = "badge";
-        badge.src = `https://r2.htnmk.com/badges/${board.user.badge}.svg`;
+        badge.src = `https://r2.htnmk.com/badges/${badgeUrl}.svg`;
         badge.width = "20";
         badge.loading = "lazy";
         boardProfile.appendChild(badge);
-    }
+    });
 
     // Create the content section
     const boardContent = document.createElement('div');
@@ -356,7 +359,7 @@ async function loadReplys(page = 0, clear = false, reverse = false, arrrev = tru
     }));
 }
 
-var boardId = window.location.href.split("/")[5];
+var boardId = window.location.pathname.split("/")[3];
 
 document.getElementById("replyForm").onsubmit = (event) => {
     event.stopPropagation(); // Prevent the default form submission

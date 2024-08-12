@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from typing import List, Optional
 
@@ -11,6 +12,7 @@ class User(BaseModel):
     username: str
     username_lower: str
     icon: str
+    header: Optional[str] = None
     following: List[int]
     following_str: List[str] = []
     followers: List[int]
@@ -18,7 +20,7 @@ class User(BaseModel):
     display_name: str
     description: Optional[str] = None
     raw_description: Optional[str] = None
-    badge: Optional[str] = None
+    badges: List[str]
     freezed: bool = False
 
     @field_serializer("created_at")
@@ -34,6 +36,15 @@ class User(BaseModel):
             self.followers_str.append(str(uid))
         if self.description:
             self.raw_description = self.description
+            url_pattern = re.compile(
+                r"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)"
+            )
+            self.description = url_pattern.sub(r'<a href="\1">\1</a>', self.description)
+            self.description = re.sub(
+                r"(@[a-zA-Z0-9_.]+)",
+                r"""<a onclick="event.stopPropagation(); router('/\1', 'profile');">\1</a>""",
+                self.description,
+            )
             self.description = (
                 self.description.replace("\r\n", "<br>")
                 .replace("\r", "<br>")

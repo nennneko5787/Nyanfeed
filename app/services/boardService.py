@@ -14,6 +14,7 @@ from ..objects import (
     UnauthorizedFileExtensionError,
     FileSizeTooLargeError,
     UserFreezedError,
+    tooLongError,
     User,
 )
 from .userService import UserService
@@ -73,7 +74,6 @@ class BoardService:
             """,
             board_id,
         )
-        print("a", _board)
         board = await cls.dictToBoard(dict(_board), user=user)
         return board
 
@@ -136,6 +136,9 @@ class BoardService:
     ):
         if user.freezed:
             raise UserFreezedError()
+
+        if content.len() > 3000:
+            raise tooLongError()
 
         content = html.escape(content)
 

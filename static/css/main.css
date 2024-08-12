@@ -138,6 +138,7 @@ label {
 
 a {
     color: #00AAFF;
+    cursor: pointer;
 }
 
 a:hover {

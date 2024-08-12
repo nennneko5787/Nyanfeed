@@ -53,6 +53,11 @@ class Board(BaseModel):
             r"(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+)"
         )
         self.content = url_pattern.sub(r'<a href="\1">\1</a>', self.content)
+        self.content = re.sub(
+            r"(@[a-zA-Z0-9_.]+)",
+            r"""<a onclick="event.stopPropagation(); router('/\1', 'profile');">\1</a>""",
+            self.content,
+        )
         self.content = (
             self.content.replace("\r\n", "<br>")
             .replace("\r", "<br>")

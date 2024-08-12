@@ -4,5 +4,6 @@ from .exceptions import (
     UnauthorizedFileExtensionError,
     FileSizeTooLargeError,
     UserFreezedError,
+    tooLongError,
 )
 from .user import User

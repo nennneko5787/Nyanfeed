@@ -89,15 +89,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     await firstPage(true);
 
-    let before = window.location.pathname;
-    let after = window.location.pathname;
+    let before = window.location.pathname.toLowerCase();
+    let after = window.location.pathname.toLowerCase();
 
     const pathLoop = setInterval(async () => {
-        after = window.location.pathname;
+        after = window.location.pathname.toLowerCase();
         if (after != before) {
             await firstPage(false);
         }
-        before = window.location.pathname;
+        before = window.location.pathname.toLowerCase();
     }, 100);
 
     document.getElementById("postDialog").onsubmit = (event) => {

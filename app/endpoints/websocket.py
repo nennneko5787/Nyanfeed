@@ -85,7 +85,6 @@ async def websocket_endpoint(websocket: WebSocket):
                     await websocket.send_json({"type": "login_failed"})
                 else:
                     ConnectionManager.user[websocket] = user
-                    print(f"logined {user.username}")
                     await websocket.send_json({"type": "login_success"})
 
             await asyncio.sleep(0)
@@ -99,7 +98,6 @@ async def websocket_endpoint(websocket: WebSocket, token: str):
     user: User = await UserAuthService.getUserFromStringToken(token)
     if user:
         ConnectionManager.user[websocket] = user
-        print(f"logined {user.username}")
         await websocket.send_json({"type": "login_success"})
     else:
         raise WebSocketException(1005, "wrong token")

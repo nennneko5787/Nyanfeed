@@ -51,21 +51,12 @@ function addPostToTimeline(board, reverse = false) {
 
     const boardReply = document.createElement("div");
 
-    if (board.reply != null) {
-        const boardReply = document.createElement("div");
-        boardReply.className = "board-replyed-to";
-        boardReply.innerHTML = `返信先: <a onclick="router('/@${board.reply.user.username}', 'user');">@${board.reply.user.username}</a>`;
-        boardElement.appendChild(boardReply);
-    }else if (board.reboard != null) {
-        const boardReply = document.createElement("div");
-        boardReply.className = "board-replyed-to";
-        boardReply.innerHTML = `<a onclick="router('/@${board.reboard.user.username}', 'user');">${board.reboard.user.display_name} さんがリボードしました</a>`;
-        boardElement.appendChild(boardReply);
-    }
-
     // Create the profile section
     const boardProfile = document.createElement('div');
     boardProfile.classList.add('board-profile');
+    boardProfile.onclick = async () => {
+        await router(`/@${board.user.username}`, "profile");
+    };
 
     const profileIcon = document.createElement('img');
     profileIcon.classList.add('profile-icon');
@@ -98,15 +89,27 @@ function addPostToTimeline(board, reverse = false) {
     // Append profile icon and profileName to boardProfile
     boardProfile.appendChild(profileIcon);
     boardProfile.appendChild(profileName);
-    if (board.user.badge !== null){
+    board.user.badges.forEach((badgeUrl) => {
         let badge = document.createElement("img");
         badge.className = "badge";
-        badge.src = `https://r2.htnmk.com/badges/${board.user.badge}.svg`;
+        badge.src = `https://r2.htnmk.com/badges/${badgeUrl}.svg`;
         badge.width = "20";
         badge.loading = "lazy";
         boardProfile.appendChild(badge);
-    }
+    });
     boardProfile.appendChild(boardDate);
+
+    if (board.reply != null) {
+        const boardReply = document.createElement("div");
+        boardReply.className = "board-replyed-to";
+        boardReply.innerHTML = `返信先: <a onclick="router('/@${board.reply.user.username}', 'user');">@${board.reply.user.username}</a>`;
+        boardElement.appendChild(boardReply);
+    }else if (board.reboard != null) {
+        const boardReply = document.createElement("div");
+        boardReply.className = "board-replyed-to";
+        boardReply.innerHTML = `<a onclick="router('/@${board.reboard.user.username}', 'user');">${board.reboard.user.display_name} さんがリボードしました</a>`;
+        boardElement.appendChild(boardReply);
+    }
 
     // Create the content section
     const boardContent = document.createElement('div');
