@@ -38,5 +38,6 @@ app.include_router(importlib.import_module("app.endpoints.api.boards.like").rout
 app.include_router(importlib.import_module("app.endpoints.api.boards.replys").router)
 app.include_router(importlib.import_module("app.endpoints.api.users.me").router)
 app.include_router(importlib.import_module("app.endpoints.api.users.edit").router)
+app.include_router(importlib.import_module("app.endpoints.api.users.follow").router)
 app.include_router(importlib.import_module("app.endpoints.api.users.username").router)
 app.include_router(importlib.import_module("app.endpoints.api.users.userBoards").router)

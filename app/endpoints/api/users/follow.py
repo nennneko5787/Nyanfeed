@@ -2,15 +2,15 @@ from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException
 
 from ...websocket import ConnectionManager
 from ....objects import Board, User
-from ....services import BoardService, UserAuthService
+from ....services import UserService, UserAuthService
 
 router = APIRouter()
 
 
-@router.post("/api/boards/{boardId:int}/like")
+@router.post("/api/users/@{username:str}/follow")
 async def getBoard(
     backgroundTasks: BackgroundTasks,
-    boardId: int,
+    username: str,
     user: User = Depends(UserAuthService.getUserFromBearerToken),
 ):
     if not user:
@@ -19,12 +19,6 @@ async def getBoard(
             detail="Bearer authentication required",
             headers={"WWW-Authenticate": 'Bearer realm="auth_required"'},
         )
-    iliked, count = await BoardService.toggleLikeBoard(boardId, user)
-    backgroundTasks.add_task(
-        ConnectionManager.sendLike,
-        boardId=boardId,
-        iliked=iliked,
-        count=count,
-        user=user,
-    )
-    return {"iliked": iliked, "count": count}
+    toUser = await UserService.getUserByScreenName(username)
+    ifollowered, count = await UserService.toggleFollowUser(toUser, user)
+    return {"ifollowered": ifollowered, "count": count}

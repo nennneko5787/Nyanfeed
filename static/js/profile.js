@@ -27,7 +27,7 @@ document.getElementById("editProfileForm").onsubmit = (event) => {
         editProfileDialog.style = "display: none;";
         event.target.reset();
         event.submitter.disabled = false;
-        loadUserProfile(data);
+        loadUserProfile(`@${data.username}`);
 
     })
     .catch(error => {
@@ -39,16 +39,13 @@ document.getElementById("editProfileForm").onsubmit = (event) => {
 }
 
 async function loadUserProfile(username) {
+    console.log(username);
     const response = await fetch(`/api/users/${username}`);
     const user = await response.json();
     document.title = `${user.display_name} (@${user.username}) - Nyanfeed`;
     window.history.pushState({}, "", `/@${user.username}`);
 
-    const userFromLocalStorage = localStorage.getItem("user");
-    const data = JSON.parse(userFromLocalStorage);
-    console.log(data.id_str);
-    console.log(user.id_str);
-    if (data.id_str == user.id_str) {
+    if (getCookie("userid") == user.id_str) {
         document.getElementById("displayName").value = user.display_name;
         document.getElementById("description").value = user.raw_description;
 
@@ -62,6 +59,37 @@ async function loadUserProfile(username) {
                 document.getElementById("blur").style = "display: none;";
                 turnstile = "";
             };
+            return;
+        }
+    }else{
+        if (user.followers_str.includes(getCookie("userid"))) {
+            document.querySelector("#followButton > span").textContent = "フォロー解除";
+            document.querySelector("#followButton").classList.remove("button-primary");
+            document.querySelector("#followButton").classList.add("button-outline");
+        }else{
+            document.querySelector("#followButton > span").textContent = "フォロー";
+            document.querySelector("#followButton").classList.remove("button-outline");
+            document.querySelector("#followButton").classList.add("button-primary");
+        }
+
+        document.querySelector("#followButton").onclick = async () => {
+            const followResponse = await fetch(`/api/users/@${user.username}/follow`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${getCookie("token")}`
+                }
+            });
+            const followResponseJsonData = await followResponse.json();
+            document.querySelector(".user-followers").innerHTML = `<b>${followResponseJsonData.count}</b> フォロワー`;
+            if (followResponseJsonData.ifollowered) {
+                document.querySelector("#followButton > span").textContent = "フォロー解除";
+                document.querySelector("#followButton").classList.remove("button-primary");
+                document.querySelector("#followButton").classList.add("button-outline");
+            }else{
+                document.querySelector("#followButton > span").textContent = "フォロー";
+                document.querySelector("#followButton").classList.remove("button-outline");
+                document.querySelector("#followButton").classList.add("button-primary");
+            }
             return;
         }
     }
@@ -81,9 +109,14 @@ async function loadUserProfile(username) {
     document.querySelector(".user-displayname").textContent = user.display_name;
     document.querySelector(".user-username").textContent = `@${user.username}`;
 
+    document.querySelectorAll(`img[x-badge-user-id="${user.id_str}"]`).forEach((element) => {
+        element.remove();
+    });
+
     user.badges.forEach((badgeUrl) => {
         let badge = document.createElement("img");
         badge.className = "badge";
+        badge.setAttribute("x-badge-user-id", user.id_str);
         badge.src = `https://r2.htnmk.com/badges/${badgeUrl}.svg`;
         badge.width = "20";
         badge.loading = "lazy";

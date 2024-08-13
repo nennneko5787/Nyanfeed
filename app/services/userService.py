@@ -1,6 +1,6 @@
 import asyncio
 import mimetypes
-from typing import Optional
+from typing import Optional, List
 
 import aioboto3
 from fastapi import UploadFile
@@ -11,6 +11,7 @@ from ..objects import (
     UnauthorizedFileExtensionError,
     FileSizeTooLargeError,
     tooLongError,
+    UserFreezedError,
 )
 
 
@@ -107,7 +108,7 @@ class UserService:
                 headerFileId = (
                     f"users/{user.id}{mimetypes.guess_extension(header.content_type)}"
                 )
-                await client.upload_fileobj(header, "nyanfeed", iconFileId)
+                await client.upload_fileobj(header, "nyanfeed", headerFileId)
                 headerFileId = f"https://r2.htnmk.com/{headerFileId}"
         _user = await Env.pool.fetchrow(
             """
@@ -127,3 +128,43 @@ class UserService:
         )
         user = User.model_validate(dict(_user))
         return user
+
+    @classmethod
+    async def toggleFollowUser(cls, toUser: User, user: User):
+        if user.freezed:
+            raise UserFreezedError()
+
+        ifollowered = False
+
+        followers: List[int] = await Env.pool.fetchval(
+            "SELECT followers FROM users WHERE id = $1", toUser.id
+        )
+
+        following: List[int] = await Env.pool.fetchval(
+            "SELECT following FROM users WHERE id = $1", user.id
+        )
+
+        if not followers:
+            followers = []
+
+        if not following:
+            following = []
+
+        if user.id in followers:
+            followers.remove(user.id)
+        else:
+            followers.append(user.id)
+            ifollowered = True
+
+        if toUser.id in following:
+            following.remove(toUser.id)
+        else:
+            following.append(toUser.id)
+
+        followersCount = len(followers)
+
+        await Env.pool.execute(
+            "UPDATE users SET followers = $1 WHERE id = $2", followers, toUser.id
+        )
+
+        return ifollowered, followersCount
