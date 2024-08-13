@@ -167,4 +167,8 @@ class UserService:
             "UPDATE users SET followers = $1 WHERE id = $2", followers, toUser.id
         )
 
+        await Env.pool.execute(
+            "UPDATE users SET following = $1 WHERE id = $2", following, user.id
+        )
+
         return ifollowered, followersCount
