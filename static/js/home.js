@@ -67,24 +67,15 @@ function setCookie(name, value, days, path = "/", sameSite = "Lax") {
 
 document.addEventListener("DOMContentLoaded", async () => {
     const userCookie = getCookie("userid");
-    const userFromLocalStorage = getCookie("user");
-    const data = JSON.parse(userFromLocalStorage);
 
-    if (userFromLocalStorage == null || data.id != userCookie) {
+    if (userCookie != null) {
         const response = await fetch("/api/users/me", {
             headers: {
                 "Authorization": `Bearer ${getCookie("token")}`
             }
         });
-        const jsonData = await response.json();
-        var CookieDate = new Date();
-        CookieDate.setFullYear(CookieDate.getFullYear() + 10);
-        setCookie("user", JSON.stringify(jsonData), 3650);
-    }
+        const user = await response.json();
 
-    const user = JSON.parse(getCookie("user"));
-
-    if (user) {
         document.getElementById("myProfileIcon").src = user.icon;
         document.getElementById("myProfileName").innerText = user.display_name;
         document.getElementById("myProfileUserName").innerText = `@${user.username}`;
