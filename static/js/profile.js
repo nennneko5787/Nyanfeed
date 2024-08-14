@@ -95,16 +95,16 @@ async function loadUserProfile(username) {
     }
 
     if (user.header != null) {
-        document.querySelector(".user-header > img").src = user.header;
+        document.querySelector(".user-header > div").style.backgroundImage = `url('${user.header}')`;
     } else {
-        document.querySelector(".user-header > img").style.display = "none";
+        document.querySelector(".user-header > div").style.display = "none";
         document.querySelector(".user-header").style.width = "100%";
         document.querySelector(".user-header").style.height = "35vh";
         document.querySelector(".user-header").style.marginBottom = "4.5px";
         document.querySelector(".user-header").style.backgroundColor = "var(--background-two-color)";
     }
 
-    document.querySelector(".user-icon > img").src = user.icon;
+    document.querySelector(".user-icon > div").style.backgroundImage = `url('${user.icon}')`;
 
     document.querySelector(".user-displayname").textContent = user.display_name;
     document.querySelector(".user-username").textContent = `@${user.username}`;

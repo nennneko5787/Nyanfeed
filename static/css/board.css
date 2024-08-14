@@ -12,8 +12,11 @@
 }
 
 .profile-icon {
-    width: 8%;
-    border-radius: 60%;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    background-position: center center;
+    background-size: cover;
 }
 
 .profile-name {

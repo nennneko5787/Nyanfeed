@@ -21,11 +21,9 @@ function addPostToPage(board, small = false) {
         await router(`/@${board.user.username}`, "profile");
     };
 
-    const profileIcon = document.createElement('img');
+    const profileIcon = document.createElement('div');
     profileIcon.classList.add('profile-icon');
-    profileIcon.src = board.user.icon;
-    profileIcon.alt = 'icon';
-    profileIcon.loading = "lazy";
+    profileIcon.style.backgroundImage = `url('${board.user.icon}')`;
 
     const profileName = document.createElement('div');
     profileName.classList.add('profile-name');

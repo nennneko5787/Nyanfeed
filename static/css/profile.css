@@ -4,23 +4,25 @@
 
 .user-header {
     padding: 0;
-
-    img {
+    div{
         width: 100%;
-        height: auto;
+        height: 225px;
+        background-position: center center;
     }
 }
 
 .user-icon {
     display: flex;
 
-    margin-top: -20%;
-    img {
+    margin-top: -20vh;
+    div {
         border: solid 5px;
         border-color: var(--background-color);
-        border-radius: 60%;
-        width: 24%;
-        height: 24%;
+        border-radius: 50%;
+        width: 150px;
+        height: 150px;
+        background-position: center center;
+        background-size: cover;
     }
 }
 
@@ -28,7 +30,7 @@
     align-items: flex-end;
     width: 20%;
     height: 10%;
-    margin-top: 18%;
+    margin-top: 18vh;
     margin-left: auto;
 }
 

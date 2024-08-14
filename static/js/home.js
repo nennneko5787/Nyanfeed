@@ -58,22 +58,31 @@ async function firstPage(pushState = true) {
     }
 }
 
+function setCookie(name, value, days, path = "/", sameSite = "Lax") {
+    let date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + date.toUTCString();
+    document.cookie = `${name}=${value}; ${expires}; path=${path}; SameSite=${sameSite}`;
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     const userCookie = getCookie("userid");
-    const userFromLocalStorage = localStorage.getItem("user");
+    const userFromLocalStorage = getCookie("user");
     const data = JSON.parse(userFromLocalStorage);
 
-    if (data == null || data.id != userCookie) {
+    if (userFromLocalStorage == null || data.id != userCookie) {
         const response = await fetch("/api/users/me", {
             headers: {
                 "Authorization": `Bearer ${getCookie("token")}`
             }
         });
         const jsonData = await response.json();
-        localStorage.setItem("user", JSON.stringify(jsonData));
+        var CookieDate = new Date();
+        CookieDate.setFullYear(CookieDate.getFullYear() + 10);
+        setCookie("user", JSON.stringify(jsonData), 3650);
     }
 
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = JSON.parse(getCookie("user"));
 
     if (user) {
         document.getElementById("myProfileIcon").src = user.icon;

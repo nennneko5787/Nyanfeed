@@ -31,6 +31,12 @@ function openLoginDialog() {
 function javascriptCallback(token) {
     turnstile = token;
 }
+function setCookie(name, value, days) {
+    let date = new Date();
+    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + date.toUTCString();
+    document.cookie = `${name}=${value}; ${expires}; path=/; SameSite=Lax`;
+}
 
 async function register() {
     let username = document.getElementById('registerForm').username.value;
@@ -38,7 +44,7 @@ async function register() {
     let jsonData = JSON.stringify({
         username, password, turnstile
     });
-    response = await fetch("/api/auth/register", {
+    let response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -46,17 +52,15 @@ async function register() {
         body: jsonData
     });
 
-    responsedData = await response.json();
+    let responsedData = await response.json();
 
     if (response.status != 200) {
         document.getElementById("registerError").innerHTML = responsedData.detail;
         return;
     }
 
-    var CookieDate = new Date;
-    CookieDate.setFullYear(CookieDate.getFullYear() +10);
-    document.cookie = `token=${responsedData.token}; expires=${CookieDate.toUTCString()};`;
-    document.cookie = `userid=${responsedData.user_id_str}; expires=${CookieDate.toUTCString()};`;
+    setCookie("token", responsedData.token, 3650); // 10 years
+    setCookie("userid", responsedData.user_id_str, 3650); // 10 years
     window.location.href = "/home";
 }
 
@@ -66,7 +70,7 @@ async function login() {
     let jsonData = JSON.stringify({
         username, password
     });
-    response = await fetch("/api/auth/login", {
+    let response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -74,26 +78,24 @@ async function login() {
         body: jsonData
     });
 
-    responsedData = await response.json();
+    let responsedData = await response.json();
 
     if (response.status != 200) {
         document.getElementById("loginError").innerHTML = responsedData.detail;
         return;
     }
 
-    var CookieDate = new Date;
-    CookieDate.setFullYear(CookieDate.getFullYear() +10);
-    document.cookie = `token=${responsedData.token}; expires=${CookieDate.toUTCString()};`;
-    document.cookie = `userid=${responsedData.user_id_str}; expires=${CookieDate.toUTCString()};`;
+    setCookie("token", responsedData.token, 3650); // 10 years
+    setCookie("userid", responsedData.user_id_str, 3650); // 10 years
     window.location.href = "/home";
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     const userCookie = getCookie("userid");
-    const userFromLocalStorage = localStorage.getItem("user");
+    const userFromLocalStorage = getCookie("user");
     const data = JSON.parse(userFromLocalStorage);
 
-    if (data != null && data.id == userCookie) {
+    if (userFromLocalStorage != null && data.id == userCookie) {
         window.location.href = "/home";
     }
 

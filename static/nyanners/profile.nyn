@@ -23,12 +23,12 @@
 </div>
 
 <div class="user-header">
-    <img />
+    <div></div>
 </div>
 
 <div class="user">
     <div class="user-icon">
-        <img src="" />
+        <div></div>
         <button class="button-primary user-follow" role="button" id="followButton"><span class="text">フォロー</span></button>
     </div>
     <div class="username-flex">
