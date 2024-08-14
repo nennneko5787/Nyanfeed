@@ -11,11 +11,11 @@ from .. import Env
 from ..objects import (
     Board,
     BoardNotFoundError,
-    UnauthorizedFileExtensionError,
     FileSizeTooLargeError,
+    UnauthorizedFileExtensionError,
+    User,
     UserFreezedError,
     tooLongError,
-    User,
 )
 from .userService import UserService
 

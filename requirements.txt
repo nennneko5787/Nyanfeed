@@ -6,4 +6,3 @@ bcrypt
 snowflake-id
 aioboto3
 slowapi
-gunicorn

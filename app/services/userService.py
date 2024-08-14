@@ -1,17 +1,17 @@
 import asyncio
 import mimetypes
-from typing import Optional, List
+from typing import List, Optional
 
 import aioboto3
 from fastapi import UploadFile
 
 from .. import Env
 from ..objects import (
-    User,
-    UnauthorizedFileExtensionError,
     FileSizeTooLargeError,
-    tooLongError,
+    UnauthorizedFileExtensionError,
+    User,
     UserFreezedError,
+    tooLongError,
 )
 
 

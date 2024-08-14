@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from ....objects import User
-from ....services import UserService, UserAuthService
+from ....services import UserAuthService, UserService
 
 router = APIRouter()
 

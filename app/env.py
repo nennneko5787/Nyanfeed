@@ -2,9 +2,9 @@ import os
 import random
 import string
 
+import asyncpg
 from slowapi import Limiter
 from slowapi.util import get_remote_address
-import asyncpg
 
 if os.path.isfile(".env"):
     from dotenv import load_dotenv

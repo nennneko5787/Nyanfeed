@@ -1,18 +1,10 @@
 from typing import List, Optional
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    File,
-    Form,
-    HTTPException,
-    Request,
-    UploadFile,
-)
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
 
 from .... import Env
 from ....objects import User
-from ....services import UserService, UserAuthService
+from ....services import UserAuthService, UserService
 
 router = APIRouter()
 

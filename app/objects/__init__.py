@@ -1,8 +1,8 @@
 from .board import Board
 from .exceptions import (
     BoardNotFoundError,
-    UnauthorizedFileExtensionError,
     FileSizeTooLargeError,
+    UnauthorizedFileExtensionError,
     UserFreezedError,
     tooLongError,
 )

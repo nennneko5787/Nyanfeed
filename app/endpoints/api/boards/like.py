@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 
-from ...websocket import ConnectionManager
 from ....objects import Board, User
 from ....services import BoardService, UserAuthService
+from ...websocket import ConnectionManager
 
 router = APIRouter()
 
