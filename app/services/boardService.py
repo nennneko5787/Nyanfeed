@@ -133,7 +133,7 @@ class BoardService:
         replyId: Optional[int] = None,
         reboardId: Optional[int] = None,
         files: Optional[List[UploadFile]] = None,
-    ):
+    ) -> Board:
         if user.freezed:
             raise UserFreezedError()
 

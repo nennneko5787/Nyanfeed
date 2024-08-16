@@ -6,3 +6,5 @@ bcrypt
 snowflake-id
 aioboto3
 slowapi
+discord.py
+aiohttp

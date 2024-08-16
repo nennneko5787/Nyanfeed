@@ -10,10 +10,11 @@ from fastapi import (
     Request,
     UploadFile,
 )
+from slowapi.util import get_remote_address
 
 from .... import Env
 from ....objects import User
-from ....services import BoardService, UserAuthService
+from ....services import BoardService, UserAuthService, LogService
 from ...websocket import ConnectionManager
 
 router = APIRouter()
@@ -49,5 +50,12 @@ async def createBoard(
     )
     backgroundTasks.add_task(
         ConnectionManager.broadcast, {"type": "board", "data": board.model_dump()}
+    )
+    backgroundTasks.add_task(
+        LogService.webhook(
+            eventName="Post",
+            eventBody=f"user: `@{user.username}` (`{user.id}`)\n```json\n{board.model_dump_json()}\n```",
+            ipAddress=get_remote_address(request),
+        )
     )
     return board

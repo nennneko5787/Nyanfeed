@@ -65,6 +65,12 @@ function setCookie(name, value, days, path = "/", sameSite = "Lax") {
     document.cookie = `${name}=${value}; ${expires}; path=${path}; SameSite=${sameSite}`;
 }
 
+function logout() {
+    document.cookie='token=; max-age=0';
+    document.cookie='userid=; max-age=0';
+    window.location.href = "/";
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     const userCookie = getCookie("userid");
 

@@ -1,5 +1,6 @@
 import asyncio
 import mimetypes
+import html
 from typing import List, Optional
 
 import aioboto3
@@ -120,10 +121,18 @@ class UserService:
                 WHERE id = $5
                 RETURNING *
             """,
-            displayName if displayName is not None else user.display_name,
-            description if description is not None else user.description,
+            (
+                html.escape(displayName)
+                if displayName is not None
+                else html.escape(user.display_name)
+            ),
+            (
+                html.escape(description)
+                if description is not None
+                else html.escape(user.description)
+            ),
             iconFileId if icon.size > 0 else user.icon,
-            headerFileId if header.size > 0 else None,
+            headerFileId if header.size > 0 else user.header,
             user.id,
         )
         user = User.model_validate(dict(_user))

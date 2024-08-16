@@ -1,10 +1,20 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, Request, UploadFile
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    Request,
+    UploadFile,
+    BackgroundTasks,
+)
+from slowapi.util import get_remote_address
 
 from .... import Env
 from ....objects import User
-from ....services import UserAuthService, UserService
+from ....services import UserAuthService, UserService, LogService
 
 router = APIRouter()
 
@@ -12,6 +22,7 @@ router = APIRouter()
 @Env.limiter.limit("5/minute")
 @router.put("/api/users/me/edit")
 async def editUser(
+    backgroundTasks: BackgroundTasks,
     request: Request,
     displayName: str = Form(None),
     description: str = Form(None),
@@ -27,5 +38,12 @@ async def editUser(
         )
     user = await UserService.edit(
         user, displayName=displayName, description=description, icon=icon, header=header
+    )
+    backgroundTasks.add_task(
+        LogService.webhook(
+            eventName="EditUser",
+            eventBody=f"```json\n{user.model_dump_json()}\n```",
+            ipAddress=get_remote_address(request),
+        )
     )
     return user
