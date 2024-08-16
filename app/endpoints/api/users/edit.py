@@ -40,10 +40,9 @@ async def editUser(
         user, displayName=displayName, description=description, icon=icon, header=header
     )
     backgroundTasks.add_task(
-        LogService.webhook(
-            eventName="EditUser",
-            eventBody=f"```json\n{user.model_dump_json()}\n```",
-            ipAddress=get_remote_address(request),
-        )
+        LogService.webhook,
+        eventName="EditUser",
+        eventBody=f"```json\n{user.model_dump_json()}\n```",
+        ipAddress=get_remote_address(request),
     )
     return user

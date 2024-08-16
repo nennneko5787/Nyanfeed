@@ -52,10 +52,9 @@ async def createBoard(
         ConnectionManager.broadcast, {"type": "board", "data": board.model_dump()}
     )
     backgroundTasks.add_task(
-        LogService.webhook(
-            eventName="Post",
-            eventBody=f"user: `@{user.username}` (`{user.id}`)\n```json\n{board.model_dump_json()}\n```",
-            ipAddress=get_remote_address(request),
-        )
+        LogService.webhook,
+        eventName="Post",
+        eventBody=f"user: `@{user.username}` (`{user.id}`)\n```json\n{board.model_dump_json()}\n```",
+        ipAddress=get_remote_address(request),
     )
     return board
