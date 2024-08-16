@@ -80,13 +80,19 @@ document.addEventListener("DOMContentLoaded", async () => {
                 "Authorization": `Bearer ${getCookie("token")}`
             }
         });
-        const user = await response.json();
+        if (response.status == 200) {
+            const user = await response.json();
 
-        document.getElementById("myProfileIcon").src = user.icon;
-        document.getElementById("myProfileName").innerText = user.display_name;
-        document.getElementById("myProfileUserName").innerText = `@${user.username}`;
-        document.getElementById("smart-toggle-icon").src = user.icon;
-        document.getElementById("smart-toggle-icon").className = "";
+            document.getElementById("myProfileIcon").src = user.icon;
+            document.getElementById("myProfileName").innerText = user.display_name;
+            document.getElementById("myProfileUserName").innerText = `@${user.username}`;
+            document.getElementById("smart-toggle-icon").src = user.icon;
+            document.getElementById("smart-toggle-icon").className = "";
+        }else{
+            document.querySelector(".navbar-content-bottom").innerHTML = `
+                <button class="button-primary" style="width: 100%;" role="button" onclick="window.location.href = '/';"><span class="text">ログイン・新規登録</span></button>
+            `;
+        }
     }else{
         document.querySelector(".navbar-content-bottom").innerHTML = `
             <button class="button-primary" style="width: 100%;" role="button" onclick="window.location.href = '/';"><span class="text">ログイン・新規登録</span></button>
