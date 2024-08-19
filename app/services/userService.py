@@ -97,7 +97,7 @@ class UserService:
                 if icon.size >= 5242880:
                     raise FileSizeTooLargeError()
                 iconFileId = (
-                    f"users/{user.id}{mimetypes.guess_extension(icon.content_type)}"
+                    f"users/{user.id}/icon{mimetypes.guess_extension(icon.content_type)}"
                 )
                 await client.upload_fileobj(icon, "nyanfeed", iconFileId)
                 iconFileId = f"https://r2.htnmk.com/{iconFileId}"
@@ -107,7 +107,7 @@ class UserService:
                 if header.size >= 5242880:
                     raise FileSizeTooLargeError()
                 headerFileId = (
-                    f"users/{user.id}{mimetypes.guess_extension(header.content_type)}"
+                    f"users/{user.id}/header{mimetypes.guess_extension(header.content_type)}"
                 )
                 await client.upload_fileobj(header, "nyanfeed", headerFileId)
                 headerFileId = f"https://r2.htnmk.com/{headerFileId}"
